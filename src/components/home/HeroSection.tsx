@@ -1,0 +1,162 @@
+'use client'
+
+import { useState } from 'react'
+import { FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaUser } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
+
+export default function HeroSection() {
+  const [location, setLocation] = useState('')
+  const [adults, setAdults] = useState('2')
+  const [children, setChildren] = useState('0')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  
+  const router = useRouter()
+  
+  const handleSearch = () => {
+    if (!location) return;
+    
+    const params = new URLSearchParams({
+      location,
+      adults,
+      children,
+      startDate,
+      endDate
+    });
+    
+    router.push(`/search?${params.toString()}`);
+  };
+  
+  return (
+    <section className="relative pt-20 pb-8 md:pb-12 lg:pb-16 overflow-hidden">
+      {/* 배경 이미지 */}
+      <div className="absolute inset-0 z-0">
+        <div className="w-full h-full">
+          <div className="relative w-full h-[70vh] min-h-[550px] max-h-[700px]">
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-800/70 to-gray-600/40"></div>
+            <img 
+              src="/images/hero-background.jpg" 
+              alt="여행 배경" 
+              className="w-full h-full object-cover object-center brightness-105"
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* 메인 콘텐츠 */}
+      <div className="container mx-auto px-4 h-full">
+        <div className="h-full flex flex-col justify-center pt-16 md:pt-24 pb-12 lg:pb-16 max-w-4xl">
+          {/* 타이틀 & 서브타이틀 */}
+          <div className="text-white mb-10 md:mb-16 drop-shadow-lg">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5 leading-tight text-white">
+              AI로 계획하는<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-300 to-pink-400 drop-shadow-none">당신만의 특별한 여행</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-100 max-w-xl">
+              목적지와 일정만 입력하면 AI가 당신만을 위한 최적의 여행 코스를 즉시 추천해 드립니다
+            </p>
+            
+            <div className="mt-6 md:hidden">
+              <button 
+                onClick={() => document.querySelector('.search-panel')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-white text-rose-500 hover:bg-gray-100 font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                여행 계획 시작하기
+              </button>
+            </div>
+          </div>
+          
+          {/* 검색 패널 */}
+          <div className="bg-white rounded-2xl shadow-xl max-w-4xl z-10 search-panel animate-fade-in">
+            <div className="p-5 lg:p-6">
+              <h2 className="text-xl font-bold text-gray-700 mb-4 hidden md:block">나만의 여행 계획 만들기</h2>
+              
+              {/* 검색 필드 */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* 위치 */}
+                <div className="md:col-span-4 lg:col-span-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-2 flex items-center">
+                    <FaMapMarkerAlt className="mr-2 text-rose-500" />
+                    <span>여행지</span>
+                  </label>
+                  <input 
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="어디로 여행가세요?"
+                  />
+                </div>
+                
+                {/* 체크인/체크아웃 날짜 */}
+                <div className="md:col-span-2 lg:col-span-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-2 flex items-center">
+                    <FaCalendarAlt className="mr-2 text-rose-500" />
+                    <span>출발일</span>
+                  </label>
+                  <input 
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+                
+                <div className="md:col-span-2 lg:col-span-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-2 flex items-center">
+                    <FaCalendarAlt className="mr-2 text-rose-500" />
+                    <span>도착일</span>
+                  </label>
+                  <input 
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+                
+                {/* 인원수 */}
+                <div className="lg:col-span-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-2 flex items-center">
+                    <FaUser className="mr-2 text-rose-500" />
+                    <span>인원</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <select 
+                      className="w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      value={adults}
+                      onChange={(e) => setAdults(e.target.value)}
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                        <option key={num} value={num}>{num}명 성인</option>
+                      ))}
+                    </select>
+                    <select 
+                      className="w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      value={children}
+                      onChange={(e) => setChildren(e.target.value)}
+                    >
+                      {[0, 1, 2, 3, 4, 5, 6].map(num => (
+                        <option key={num} value={num}>{num}명 어린이</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* 검색 버튼 */}
+              <div className="mt-5 flex justify-end">
+                <button 
+                  onClick={handleSearch}
+                  className="bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center"
+                >
+                  <FaSearch className="mr-2" />
+                  여행 계획 만들기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+} 

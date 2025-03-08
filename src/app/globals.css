@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 부트스트랩 스타일 임포트 */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+/* 구글 폰트 임포트 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 51, 51, 51;
+  --background-rgb: 255, 255, 255;
+  --font-main: 'Noto Sans KR', 'Montserrat', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  
+  /* 에어비앤비 스타일 색상 변수 */
+  --color-primary: #FF385C;
+  --color-primary-dark: #E31C5F;
+  --color-secondary: #00A699;
+  --color-tertiary: #484848;
+  --color-gray-light: #F7F7F7;
+  --color-gray-medium: #DDDDDD;
+  --color-gray-dark: #717171;
+}
+
+/* 다크 모드 비활성화 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 51, 51, 51;
+    --background-rgb: 255, 255, 255;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  min-height: 100vh;
+  font-family: var(--font-main);
+  letter-spacing: -0.01em;
+}
+
+/* 커스텀 유틸리티 클래스 */
+@layer components {
+  .btn-primary {
+    @apply bg-rose-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-rose-600 transition-all;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-gray-800 font-medium py-2 px-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden;
+  }
+  
+  .card-header {
+    @apply p-4 font-semibold;
+  }
+  
+  .card-body {
+    @apply p-4;
+  }
+  
+  .form-control {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500;
+  }
+
+  /* 에어비앤비 스타일 그리드 시스템 */
+  .airbnb-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6;
+  }
+
+  /* 에어비앤비 스타일 카드 */
+  .airbnb-card {
+    @apply rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-white;
+  }
+
+  .airbnb-card-image {
+    @apply relative h-[220px] overflow-hidden;
+  }
+
+  .airbnb-card-image img {
+    @apply w-full h-full object-cover transition-transform duration-500 hover:scale-110;
+  }
+
+  .airbnb-card-content {
+    @apply p-4;
+  }
+
+  .airbnb-card-title {
+    @apply text-lg font-bold text-gray-800 mb-1;
+  }
+
+  .airbnb-card-info {
+    @apply flex items-center text-sm text-gray-600 mb-1;
+  }
+
+  /* 에어비앤비 스타일 버튼 */
+  .airbnb-btn {
+    @apply rounded-lg font-medium transition-all duration-200;
+  }
+
+  .airbnb-btn-primary {
+    @apply bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:shadow-md;
+  }
+
+  .airbnb-btn-secondary {
+    @apply bg-white text-gray-800 border border-gray-200 hover:border-gray-300 hover:shadow-sm;
+  }
+
+  /* 에어비앤비 스타일 서치 바 */
+  .airbnb-searchbar {
+    @apply flex items-center border border-gray-200 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+html {
+  font-family: var(--font-main);
+  scroll-behavior: smooth;
+}
+
+/* 에어비앤비 스타일 페이지 섹션 */
+.section {
+  @apply py-16 bg-white;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold mb-12 text-center relative pb-4;
+}
+
+.section-title::after {
+  content: "";
+  @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-rose-500 rounded-full;
+}
+
