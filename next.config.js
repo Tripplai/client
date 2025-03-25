@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-import { resolve } from 'path';
+const path = require('path');
 
 const nextConfig = {
   transpilePackages: ['@chakra-ui/react', '@chakra-ui/next-js'],
@@ -46,10 +46,10 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
     };
     return config;
   },
 }
 
-export default nextConfig; 
+module.exports = nextConfig; 

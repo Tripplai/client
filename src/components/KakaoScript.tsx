@@ -11,7 +11,8 @@ export default function KakaoScript() {
         // Kakao SDK 초기화
         if (window.Kakao) {
           if (!window.Kakao.isInitialized()) {
-            window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_API_KEY || '');
+            window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY || '');
+            console.log('카카오 SDK 초기화 완료:', window.Kakao.isInitialized());
           }
         }
       }}

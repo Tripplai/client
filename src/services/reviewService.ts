@@ -25,7 +25,7 @@ export async function getReviews({
       baseUrl = window.location.origin;
     } else {
       // 서버 측에서는 환경 변수 또는 기본값 사용
-      baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
+      baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     }
 
     // API URL 구성
@@ -78,7 +78,7 @@ export async function getReviewById(id: string): Promise<Review | null> {
       baseUrl = window.location.origin;
     } else {
       // 서버 측에서는 환경 변수 또는 기본값 사용
-      baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
+      baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     }
 
     const url = `${baseUrl}/api/reviews/${id}`;
