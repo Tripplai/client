@@ -163,8 +163,28 @@ export default function ShareButtons({ url, title, description, location }: Shar
   
   const shareToKakao = () => {
     try {
-      if (!window.Kakao?.Share) {
-        alert('카카오톡 공유 기능을 초기화하는 중입니다. 잠시 후 다시 시도해주세요.');
+      console.log('카카오톡 공유 시도...');
+      console.log('window.Kakao 객체 존재 여부:', !!window.Kakao);
+      console.log('window.Kakao.isInitialized():', window.Kakao?.isInitialized());
+      console.log('window.Kakao.Share 존재 여부:', !!window.Kakao?.Share);
+      
+      if (!window.Kakao) {
+        alert('카카오톡 SDK가 로드되지 않았습니다. 페이지를 새로고침 후 다시 시도해주세요.');
+        return;
+      }
+      
+      if (!window.Kakao.isInitialized()) {
+        console.log('카카오 SDK 초기화 시도...');
+        if (process.env.NEXT_PUBLIC_KAKAO_APP_KEY) {
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY);
+          console.log('초기화 후 상태:', window.Kakao.isInitialized());
+        } else {
+          console.error('카카오 API 키가 설정되지 않았습니다.');
+        }
+      }
+      
+      if (!window.Kakao.Share) {
+        alert('카카오톡 공유 기능을 사용할 수 없습니다. 최신 브라우저에서 시도해주세요.');
         return;
       }
       
