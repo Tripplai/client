@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Resume, CreateResumeRequest, UpdateResumeRequest } from '@/types';
-import { getSession, signIn, signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -35,36 +35,53 @@ export const resumeApi = {
 };
 
 export const authApi = {
-  login: (provider: string) => {
-    signIn(provider, {
-      callbackUrl: '/dashboard'
-    }).catch(error => {
-      console.error('로그인 오류:', error);
-    });
+  /** 일반 로그인 */
+  login: async (credentials: Record<string, string> | undefined) => {
+    try {
+      const res = await axios.post(`${API_URL}/auth/login`, {
+        email: credentials?.email,
+        password: credentials?.password,
+      })
+      return res.data
+    } catch (error) {
+      console.log("일반 로그인 API 호출 중 에러: ", error)
+    }
   },
 
-  logout: () => {
-    signOut({ callbackUrl: '/' }).catch(error => {
-      console.error('로그아웃 오류:', error);
-    });
-  }
-};
-
-/** 회원가입 */
-export const signUp = async (nickname: string, email: string, password: string, phoneNumber: string) => {
-  try {
-    const res = await fetch(`${API_URL}/auth/sign-up`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname, email, password, phoneNumber }),
-    });
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || "회원가입에 실패했습니다.");
+  /** 회원가입 */
+  signUp: async (nickname: string, email: string, password: string, phoneNumber: string) => {
+    try {
+      const res = await axios.post(`${API_URL}/auth/sign-up`, {
+        nickname, email, password, phoneNumber
+      })
+      return res.data
+    } catch (error) {
+      console.error("회원가입 API 호출 중 에러: ", error);
     }
-    return await res.json();
-  } catch (error) {
-    console.error("회원가입 실패:", error);
-    throw error;
-  }
+  },
+
+  /** 이메일 중복 확인 */
+  emailCheck: async (email: string) => {
+    try {
+      const res = await axios.post(`${API_URL}/email-check`, {
+        email
+      })
+      return res.data
+    } catch (error) {
+      console.error("이메일 중복 확인 API 호출 중 에러: ", error);
+    }
+  },
+
+  /** 인증 번호 확인 */
+  certification: async (certification: string) => {
+    try {
+      const res = await axios.post(`${API_URL}/certification`, {
+        certification
+      })
+      return res.data
+    } catch (error) {
+      console.error("인증 번호 확인 API 호출 중 에러: ", error);
+    }
+  },
+
 };

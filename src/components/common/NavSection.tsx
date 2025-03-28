@@ -83,10 +83,10 @@ export default function NavSection() {
           <button
             className="ml-1 flex items-center gap-2 text-gray-600 border border-gray-200 hover:border-gray-300 hover:shadow-sm px-3 py-2 rounded-full hover:bg-gray-50 transition-all duration-200"
             onClick={handleLoginClick}
-            aria-label={session?.user ? "로그아웃" : "로그인"}
+            aria-label={session?.user.name ?? "로그인"}
           >
             <FaUserCircle className="text-gray-500" />
-            <span className="hidden md:block text-sm font-medium">{session?.user ? "로그아웃" : "로그인"}</span>
+            <span className="hidden md:block text-sm font-medium">{session?.user.name ?? "로그인"}</span>
           </button>
         </div>
       </div>

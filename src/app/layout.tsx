@@ -6,8 +6,15 @@ import "../styles/home.css";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { MSWProvider } from "@/components/providers/MSWProvider";
 
 const inter = Inter({ subsets: ["latin"] });
+
+if (process.env.NEXT_PUBLIC_API_MOCKING === "true") {
+  import("@/mocks/node").then(({ server }) => {
+    server.listen({ onUnhandledRequest: "bypass" });
+  });
+}
 
 export const metadata: Metadata = {
   title: "여행 플래너",
@@ -24,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <NextAuthProvider>
-          {children}
-          {modal}
-          <ToastContainer />
-        </NextAuthProvider>
+        <MSWProvider>
+          <NextAuthProvider>
+            {children}
+            {modal}
+            <ToastContainer />
+          </NextAuthProvider>
+        </MSWProvider>
       </body>
     </html>
   );
