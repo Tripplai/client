@@ -1,11 +1,7 @@
-import NextAuth from "next-auth/next";
-import GoogleProvider from "next-auth/providers/google";
-import NaverProvider from "next-auth/providers/naver";
-import KakaoProvider from "next-auth/providers/kakao";
-import CredentialsProvider from "next-auth/providers/credentials";
-import type { User as NextAuthUser } from "next-auth";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials"
+import { jwtDecode } from "jwt-decode";
+import { authApi } from "@/services/api";
 
 /**
  * NextAuth 설정
@@ -14,54 +10,43 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      id: 'email',
+      name: 'email',
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        try {
-          const res = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" }
-          });
-          
-          if (!res.ok) {
-            console.error("Login failed with status:", res.status);
-            throw new Error("Invalid credentials");
-          }
-          
-          const user = await res.json();
-          console.log("Login response:", user);
-          
-          if (!user) throw new Error("Server returned an empty response");
-          
-          // 서버 응답 형식에 맞게 사용자 객체 구성
-          return {
-            id: user.memberId || user.id || "1",
-            email: user.email,
-            name: user.nickname || user.name,
-            accessToken: user.accessToken,
-            refreshToken: user.refreshToken
-          };
-        } catch (error) {
-          console.error("Login error:", error);
-          return null;
+        const res = await authApi.login(credentials)
+        if (res.code !== "SU") return null;
+        const accessToken = jwtDecode(res.accessToken)
+        const sub = JSON.parse(accessToken.sub as string)
+        return {
+          id: sub.email,
+          email: sub.email,
+          name: sub.nickname,
+          image: sub.url,
+          accessToken: res.accessToken
         }
       }
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID || "",
-      clientSecret: process.env.GOOGLE_SECRET || "",
-    }),
-    NaverProvider({
-      clientId: process.env.NAVER_ID || "",
-      clientSecret: process.env.NAVER_SECRET || "",
-    }),
-    KakaoProvider({
-      clientId: process.env.KAKAO_ID || "",
-      clientSecret: process.env.KAKAO_SECRET || "",
+    CredentialsProvider({
+      id: "oauth",
+      name: "oauth",
+      credentials: {
+        accessToken: { label: "Access Token", type: "text" }
+      },
+      async authorize(credentials) {
+        const accessToken = jwtDecode(credentials?.accessToken as string)
+        const sub = JSON.parse(accessToken.sub as string)
+        return {
+          id: sub.email,
+          email: sub.email,
+          name: sub.nickname,
+          image: sub.url,
+          accessToken: credentials?.accessToken
+        }
+      }
     }),
   ],
   pages: {
@@ -73,29 +58,23 @@ const handler = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30일
   },
   callbacks: {
-    async redirect() {
-      // 로그인 성공 후 대시보드로 리다이렉션
-      return "/dashboard";
+    async jwt({ token, user }) {
+      if (user?.accessToken) {
+        token.accessToken = user.accessToken
+      }
+      return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.accessToken = token.accessToken;
-        session.user.refreshToken = token.refreshToken;
-        session.user.id = token.id;
+      if (token.user) {
+        session.user = token.user;
       }
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        const typedUser = user as NextAuthUser;
-        token.accessToken = typedUser.accessToken;
-        token.refreshToken = typedUser.refreshToken;
-        token.id = typedUser.id;
-      }
-      return token;
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/dashboard`;
     },
   },
 });
 
 // 경로 핸들러 내보내기
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

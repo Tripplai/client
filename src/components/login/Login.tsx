@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { FaGoogle } from "react-icons/fa";
 import { SiNaver } from "react-icons/si";
@@ -9,33 +9,26 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 import TermsModal from "@/components/modal/TermsModal";
 import PrivacyModal from "@/components/modal/PrivacyModal";
 import { signIn } from "next-auth/react";
-import { signUp } from "@/services/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { authApi } from "@/services/api";
 
-interface LoginProps {
-  handleLogin?: (provider: string) => void;
-}
-
-export default function Login({ handleLogin }: LoginProps) {
+export default function Login() {
   // 테스트 환경에서는 useSearchParams가 undefined일 수 있음
-  const searchParamsHook = useSearchParams();
-  const searchParams = {
-    get: (name: string) => {
-      try {
-        return searchParamsHook?.get(name) ?? null;
-      } catch {
-        return null;
-      }
-    },
-    has: (name: string) => {
-      try {
-        return searchParamsHook?.has(name) ?? false;
-      } catch {
-        return false;
-      }
-    }
-  };
+
+  let searchParams;
+  try {
+    searchParams = useSearchParams();
+  } catch (e) {
+    // 테스트 환경에서는 빈 객체로 대체
+    searchParams = {
+      get: () => null,
+      has: () => false,
+    };
+  }
+
+
+  const router = useRouter();
 
   // 탭 전환
   const [isLoginTab, setIsLoginTab] = useState(true);
@@ -55,16 +48,24 @@ export default function Login({ handleLogin }: LoginProps) {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [checkedEmail, setCheckedEmail] = useState("");
+  const [certificationNumber, setCertificationNumber] = useState("");
+  const [certificationSuccess, setCertificationSuccess] = useState(false);
 
-  // input에 포커스를 주기위한 ref
+  // 포커스를 주기위한
+  // input ref
   const loginEmailRef = useRef<HTMLInputElement | null>(null);
   const loginPasswordRef = useRef<HTMLInputElement | null>(null);
   const signupEmailRef = useRef<HTMLInputElement | null>(null);
+  const certificationNumberRef = useRef<HTMLInputElement | null>(null);
   const signupPasswordRef = useRef<HTMLInputElement | null>(null);
   const nicknameRef = useRef<HTMLInputElement | null>(null);
   const phoneNumberRef = useRef<HTMLInputElement | null>(null);
   const termsAcceptedRef = useRef<HTMLInputElement | null>(null);
   const privacyAcceptedRef = useRef<HTMLInputElement | null>(null);
+  // button ref
+  const duplicateCheckRef = useRef<HTMLButtonElement | null>(null);
+  const certificationButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // 에러 메시지
   const [loginErrorMessage, setLoginErrorMessage] = useState("");
@@ -74,9 +75,13 @@ export default function Login({ handleLogin }: LoginProps) {
     PASSWORD_REQUIRED = "비밀번호를 입력해 주세요.",
     NICKNAME_REQUIRED = "닉네임을 입력해 주세요.",
     PHONE_NUMBER_REQUIRED = "전화번호를 입력해 주세요.",
+    CERTIFICATION_NUMBER_REQUIRED = "인증번호를 입력해 주세요.",
+    CERTIFICATION_NUMBER_CHECK = "인증번호를 확인해 주세요.",
+    INVALID_CERTIFICATION_NUMBER = "인증번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.",
     NICKNAME_TOO_SHORT = "닉네임은 2자 이상이어야 합니다.",
     PASSWORD_TOO_SHORT = "비밀번호는 6자 이상이어야 합니다.",
     INVALID_EMAIL = "이메일 형식이 잘못되었습니다.",
+    DUPLICATE_CHECK_EMAIL = "이메일 중복 확인을 해주세요.",
     INVALID_PHONE_NUMBER = "전화번호 형식이 잘못되었습니다.",
     USER_NOT_FOUND = "이메일 혹은 비밀번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.",
     DUPLICATE_EMAIL = "사용할 수 없는 이메일입니다. 다른 이메일을 입력해 주세요.",
@@ -105,7 +110,8 @@ export default function Login({ handleLogin }: LoginProps) {
 
   const oauthItems = [
     {
-      title: "구글",
+      titleKo: "구글",
+      titleEn: "google",
       svg: <FaGoogle size={18} />,
       bgColor: "bg-[#4285F4]",
       textColor: "text-white",
@@ -115,7 +121,8 @@ export default function Login({ handleLogin }: LoginProps) {
       customButton: false,
     },
     {
-      title: "네이버",
+      titleKo: "네이버",
+      titleEn: "naver",
       svg: <SiNaver size={20} className="font-bold" />,
       bgColor: "bg-[#03C75A]",
       textColor: "text-white",
@@ -125,7 +132,8 @@ export default function Login({ handleLogin }: LoginProps) {
       customButton: false,
     },
     {
-      title: "카카오",
+      titleKo: "카카오",
+      titleEn: "kakao",
       svg: <RiKakaoTalkFill size={20} />,
       bgColor: "bg-[#FEE500]",
       textColor: "text-gray-800",
@@ -143,53 +151,71 @@ export default function Login({ handleLogin }: LoginProps) {
     }
   }, [searchParams, AuthErrorMessage.USER_NOT_FOUND]);
 
-  /** 이메일 로그인 */
-  const handleLocalLogin = async () => {
-    setLoginErrorMessage("");
+  /** 이메일 입력 검증 로직 */
+  const validateEmailInput = () => {
+    if (!signupEmail) {
+      signupEmailRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.EMAIL_REQUIRED);
+      return false;
+    }
 
-    if (!loginEmail) {
-      loginEmailRef.current?.focus();
-      setLoginErrorMessage(AuthErrorMessage.EMAIL_REQUIRED);
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signupEmail)) {
+      signupEmailRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.INVALID_EMAIL);
+      return false;
+    }
+
+    return true;
+  };
+
+  /** 인증 번호 확인 */
+  const handleCertification = async () => {
+    setSignupErrorMessage("");
+
+    if (!certificationNumber) {
+      certificationNumberRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.CERTIFICATION_NUMBER_REQUIRED);
       return;
     }
 
-    if (!loginPassword) {
-      loginPasswordRef.current?.focus();
-      setLoginErrorMessage(AuthErrorMessage.PASSWORD_REQUIRED);
-      return;
-    }
-
-    try {
-      console.log("로그인 시도:", { email: loginEmail, password: loginPassword });
-      const result = await signIn("credentials", { 
-        email: loginEmail, 
-        password: loginPassword,
-        redirect: false
-      });
-      
-      console.log("로그인 결과:", result);
-      
-      if (result?.error) {
-        setLoginErrorMessage(AuthErrorMessage.USER_NOT_FOUND);
-      } else if (result?.ok) {
-        window.location.href = "/dashboard";
-      }
-    } catch (error) {
-      console.error("로그인 오류:", error);
-      setLoginErrorMessage(AuthErrorMessage.USER_NOT_FOUND);
+    const res = await authApi.certification(certificationNumber);
+    if (res.code === "SU") {
+      signupPasswordRef.current?.focus();
+      setCertificationSuccess(true);
+    } else {
+      certificationNumberRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.INVALID_CERTIFICATION_NUMBER);
     }
   };
+
+/** 이메일 로그인 */
+const handleLocalLogin = async () => {
+  setLoginErrorMessage("");
+
+  if (!loginEmail) {
+    loginEmailRef.current?.focus();
+    setLoginErrorMessage(AuthErrorMessage.EMAIL_REQUIRED);
+    return;
+  }
+
+  if (!loginPassword) {
+    loginPasswordRef.current?.focus();
+    setLoginErrorMessage(AuthErrorMessage.PASSWORD_REQUIRED);
+    return;
+  }
+
+  signIn("email", { email: loginEmail, password: loginPassword });
+};
+
 
   /** 소셜 로그인 */
   const handleSocialLogin = (provider: string) => {
-    // todo 소셜 로그인 로직 작성
-    if (handleLogin) {
-      handleLogin(provider);
-    }
+    router.push(`http://localhost:8080/api/auth/oauth2/${provider}`);
   };
 
   /** 회원가입 */
-  const handleSignup = async () => {
+  const handleSignup = async (e: React.KeyboardEvent | React.MouseEvent) => {
+    e.preventDefault();
     setSignupErrorMessage("");
     setSuccessfulSignup(false);
 
@@ -205,15 +231,23 @@ export default function Login({ handleLogin }: LoginProps) {
       return;
     }
 
-    if (!signupEmail) {
-      signupEmailRef.current?.focus();
-      setSignupErrorMessage(AuthErrorMessage.EMAIL_REQUIRED);
+    if (!validateEmailInput()) return;
+
+    if (signupEmail !== checkedEmail) {
+      duplicateCheckRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.DUPLICATE_CHECK_EMAIL);
       return;
     }
 
-    if (!/^[a-zA-Z0-9]([a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signupEmail)) {
-      signupEmailRef.current?.focus();
-      setSignupErrorMessage(AuthErrorMessage.INVALID_EMAIL);
+    if (!certificationNumber) {
+      certificationNumberRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.CERTIFICATION_NUMBER_REQUIRED);
+      return;
+    }
+
+    if (!certificationSuccess) {
+      certificationButtonRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.CERTIFICATION_NUMBER_CHECK);
       return;
     }
 
@@ -266,8 +300,9 @@ export default function Login({ handleLogin }: LoginProps) {
     }
 
     try {
-      const res = await signUp(nickname, signupEmail, signupPassword, phoneNumber);
-      if (res.code === "SU") {
+      const res = await authApi.signUp(nickname, signupEmail, signupPassword, phoneNumber);
+      // console.log(res);
+      if (res?.code === "SU") {
         setNickname("");
         setSignupEmail("");
         setSignupPassword("");
@@ -278,6 +313,21 @@ export default function Login({ handleLogin }: LoginProps) {
         setSuccessfulSignup(true);
       }
     } catch {
+      signupEmailRef.current?.focus();
+      setSignupErrorMessage(AuthErrorMessage.DUPLICATE_EMAIL);
+    }
+  };
+
+  /** 이메일 중복 확인 */
+  const handleEmailCheck = async () => {
+    setSignupErrorMessage("");
+    if (!validateEmailInput()) return;
+    const res = await authApi.emailCheck(signupEmail);
+    if (res.code === "SU") {
+      setCheckedEmail(signupEmail);
+      certificationNumberRef.current?.focus();
+    } else {
+      setCheckedEmail("");
       signupEmailRef.current?.focus();
       setSignupErrorMessage(AuthErrorMessage.DUPLICATE_EMAIL);
     }
@@ -298,7 +348,7 @@ export default function Login({ handleLogin }: LoginProps) {
         </button>
       </div>
 
-      <div className="p-8">
+      <div className="p-8 max-h-[calc(100dvh-86px)] md:max-h-[calc(100dvh-200px)] overflow-y-scroll">
         {isLoginTab ? (
           <>
             {/* 이메일 로그인 */}
@@ -371,20 +421,20 @@ export default function Login({ handleLogin }: LoginProps) {
             <div className="space-y-3">
               {oauthItems.map((item) => (
                 <button
-                  key={item.title}
+                  key={item.titleEn}
                   className={`${
                     !item.customButton
                       ? `${item.bgColor} ${item.textColor} ${item.hoverColor} ${item.borderColor} flex items-center justify-center gap-3`
                       : `${item.hoverColor} ${item.borderColor} flex justify-center`
                   } w-full h-12 rounded-lg font-medium transition-colors duration-200 overflow-hidden border-none`}
-                  onClick={() => handleSocialLogin(item.title.toLowerCase())}
+                  onClick={() => handleSocialLogin(item.titleEn.toLowerCase())}
                 >
                   {item.customButton ? (
                     item.svg
                   ) : (
                     <>
                       <span className={`flex items-center justify-center ${item.iconBox || ""}`}>{item.svg}</span>
-                      <span>{`${item.title}로 계속하기`}</span>
+                      <span>{`${item.titleKo}로 계속하기`}</span>
                     </>
                   )}
                 </button>
@@ -395,6 +445,7 @@ export default function Login({ handleLogin }: LoginProps) {
           <>
             {/* 회원가입 입력 필드 */}
             <div className="space-y-4">
+              {/* 닉네임 */}
               <div>
                 <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1">
                   닉네임
@@ -406,27 +457,68 @@ export default function Login({ handleLogin }: LoginProps) {
                   placeholder="2자 이상의 닉네임"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                 />
               </div>
 
-              <div>
+              {/* 이메일 */}
+              <div className="relative">
                 <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1">
                   이메일
                 </label>
                 <input
+                  disabled={certificationSuccess}
                   ref={signupEmailRef}
                   id="signup-email"
                   type="email"
                   placeholder="이메일 주소"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSignup()}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
+                  className="w-full pl-4 pr-28 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all disabled:cursor-not-allowed"
                 />
+                <button
+                  ref={duplicateCheckRef}
+                  disabled={(!signupEmail && !checkedEmail) || signupEmail === checkedEmail}
+                  className="absolute right-2 top-[33px] w-24 h-10 rounded-lg border-none text-sm bg-gray-200 hover:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  onClick={() => handleEmailCheck()}
+                >
+                  {!!signupEmail && signupEmail === checkedEmail ? "사용 가능" : "중복 확인"}
+                </button>
               </div>
 
+              {/* 인증번호 */}
+              <div
+                className={`relative overflow-hidden transition-all ${
+                  !!signupEmail && signupEmail === checkedEmail ? "h-[84px]" : "h-0"
+                }`}
+              >
+                <label htmlFor="signup-certification" className="block text-sm font-medium text-gray-700 mb-1">
+                  인증번호
+                </label>
+                <input
+                  ref={certificationNumberRef}
+                  disabled={certificationSuccess}
+                  id="signup-certification"
+                  type="text"
+                  placeholder="이메일로 전송된 인증번호를 입력해 주세요"
+                  value={certificationNumber}
+                  onChange={(e) => setCertificationNumber(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
+                  className="w-full pl-4 pr-28 py-3 border border-gray-300 rounded-lg outline-none focus:ring-inset focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all disabled:cursor-not-allowed"
+                />
+                <button
+                  ref={certificationButtonRef}
+                  disabled={certificationSuccess}
+                  onClick={handleCertification}
+                  className="absolute right-2 top-[33px] w-24 h-10 rounded-lg border-none text-sm bg-gray-200 hover:bg-gray-300  disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                >
+                  인증번호 확인
+                </button>
+              </div>
+
+              {/* 비밀번호 */}
               <div>
                 <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1">
                   비밀번호
@@ -439,7 +531,7 @@ export default function Login({ handleLogin }: LoginProps) {
                     placeholder="6자 이상의 비밀번호"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                    onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
                     className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                   />
                   <button
@@ -453,6 +545,7 @@ export default function Login({ handleLogin }: LoginProps) {
                 </div>
               </div>
 
+              {/* 전화번호 */}
               <div>
                 <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700 mb-1">
                   전화번호
@@ -464,7 +557,7 @@ export default function Login({ handleLogin }: LoginProps) {
                   placeholder="숫자만 입력 (01012345678)"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all appearance-none"
                 />
               </div>
@@ -478,7 +571,7 @@ export default function Login({ handleLogin }: LoginProps) {
                     id="terms"
                     checked={termsAccepted}
                     onChange={() => setTermsAccepted(!termsAccepted)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                    onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
                     className="w-4 h-4 accent-rose-500 rounded cursor-pointer"
                   />
                   <label htmlFor="terms" className="text-gray-700 cursor-pointer">
@@ -500,7 +593,7 @@ export default function Login({ handleLogin }: LoginProps) {
                     id="privacy"
                     checked={privacyAccepted}
                     onChange={() => setPrivacyAccepted(!privacyAccepted)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                    onKeyDown={(e) => e.key === "Enter" && handleSignup(e)}
                     className="w-4 h-4 accent-rose-500 rounded cursor-pointer"
                   />
                   <label htmlFor="privacy" className="text-gray-700 cursor-pointer">
@@ -516,6 +609,10 @@ export default function Login({ handleLogin }: LoginProps) {
                 </div>
               </div>
 
+              {/* 에러 메시지 */}
+              <p className="text-xs text-rose-500">{signupErrorMessage}</p>
+
+              {/* 회원가입 버튼 */}
               <button
                 onClick={handleSignup}
                 disabled={!allAccepted}
@@ -527,8 +624,6 @@ export default function Login({ handleLogin }: LoginProps) {
               >
                 회원가입
               </button>
-
-              <p className="text-xs text-rose-500">{signupErrorMessage}</p>
             </div>
           </>
         )}
