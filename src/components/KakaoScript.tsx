@@ -2,6 +2,12 @@
 
 import Script from 'next/script'
 
+// Kakao 타입 정의
+type KakaoType = {
+  init: (apiKey: string) => void;
+  isInitialized: () => boolean;
+}
+
 export default function KakaoScript() {
   return (
     <Script
@@ -9,10 +15,11 @@ export default function KakaoScript() {
       strategy="afterInteractive"
       onLoad={() => {
         // Kakao SDK 초기화
-        if (window.Kakao) {
-          if (!window.Kakao.isInitialized()) {
-            window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY || '');
-            console.log('카카오 SDK 초기화 완료:', window.Kakao.isInitialized());
+        const kakao = (window as {Kakao?: KakaoType}).Kakao;
+        if (kakao) {
+          if (!kakao.isInitialized()) {
+            kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY || '');
+            console.log('카카오 SDK 초기화 완료:', kakao.isInitialized());
           }
         }
       }}

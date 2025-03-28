@@ -1,5 +1,6 @@
+'use client'
+
 import React from "react";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "../styles/home.css";
@@ -7,20 +8,19 @@ import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MSWProvider } from "@/components/providers/MSWProvider";
+import dynamic from 'next/dynamic'
 
+const KakaoScript = dynamic(() => import('../components/KakaoScript'), {
+  ssr: false
+})
 
 const inter = Inter({ subsets: ["latin"] });
 
-if (process.env.NEXT_PUBLIC_API_MOCKING === "true") {
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_API_MOCKING === "true") {
   import("@/mocks/node").then(({ server }) => {
-    server.listen({ onUnhandledRequest: "bypass" });
+    server.listen();
   });
 }
-
-export const metadata: Metadata = {
-  title: "여행 플래너",
-  description: "AI가 추천하는 맞춤형 여행 계획",
-};
 
 export default function RootLayout({
   children,
@@ -31,14 +31,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        <KakaoScript />
-      </head>
       <body className={inter.className}>
+        <KakaoScript />
         <MSWProvider>
           <NextAuthProvider>
-            {children}
-            {modal}
+            {React.Children.map(children, (child, i) => 
+              React.isValidElement(child) ? React.cloneElement(child, { key: `child-${i}` }) : child
+            )}
+            {React.Children.map(modal, (child, i) => 
+              React.isValidElement(child) ? React.cloneElement(child, { key: `modal-${i}` }) : child
+            )}
             <ToastContainer />
           </NextAuthProvider>
         </MSWProvider>
