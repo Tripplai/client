@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { Inter } from "next/font/google";
@@ -8,16 +8,18 @@ import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MSWProvider } from "@/components/providers/MSWProvider";
-import dynamic from 'next/dynamic'
-import { ThemeMode } from '@/hooks/useDarkMode';
+import dynamic from "next/dynamic";
+import RQProvider from "@/components/providers/RQProvider"; 
+import { ThemeMode } from '@/hooks/useDarkMode'; 
 
-const KakaoScript = dynamic(() => import('../components/KakaoScript'), {
-  ssr: false
-})
+
+const KakaoScript = dynamic(() => import("../components/KakaoScript"), {
+  ssr: false,
+});
 
 const inter = Inter({ subsets: ["latin"] });
 
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_API_MOCKING === "true") {
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_API_MOCKING === "true") {
   import("@/mocks/node").then(({ server }) => {
     server.listen();
   });
@@ -139,13 +141,15 @@ export default function RootLayout({
         <KakaoScript />
         <MSWProvider>
           <NextAuthProvider>
-            {React.Children.map(children, (child, i) => 
-              React.isValidElement(child) ? React.cloneElement(child, { key: `child-${i}` }) : child
-            )}
-            {React.Children.map(modal, (child, i) => 
-              React.isValidElement(child) ? React.cloneElement(child, { key: `modal-${i}` }) : child
-            )}
-            <ToastContainer />
+            <RQProvider>
+              {React.Children.map(children, (child, i) =>
+                React.isValidElement(child) ? React.cloneElement(child, { key: `child-${i}` }) : child
+              )}
+              {React.Children.map(modal, (child, i) =>
+                React.isValidElement(child) ? React.cloneElement(child, { key: `modal-${i}` }) : child
+              )}
+              <ToastContainer />
+            </RQProvider>
           </NextAuthProvider>
         </MSWProvider>
       </body>

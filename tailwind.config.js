@@ -1,11 +1,11 @@
-const colors = require('tailwindcss/colors');
+const colors = require("tailwindcss/colors");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   darkMode: 'class',
   theme: {
@@ -16,6 +16,7 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       colors: {
+        // develop 브랜치에서 추가된 theme 색상 변수
         theme: {
           primary: 'var(--theme-primary)',
           secondary: 'var(--theme-secondary)',
@@ -23,75 +24,79 @@ module.exports = {
           background: 'var(--theme-background)',
           text: 'var(--theme-text)',
         },
-        primary: '#0070f3',
-        secondary: '#6c757d',
-        success: '#28a745',
-        danger: '#dc3545',
-        warning: '#ffc107',
-        info: '#17a2b8',
-        'airbnb': {
-          'primary': '#FF385C',
-          'secondary': '#00A699',
-          'dark': '#484848',
-          'light': '#F7F7F7',
-          'gray': {
-            100: '#F7F7F7',
-            200: '#DDDDDD',
-            300: '#717171',
-            400: '#484848',
-          }
+        // feature/32-festival 및 develop 공통 색상
+        primary: "#0070f3",
+        secondary: "#6c757d",
+        success: "#28a745",
+        danger: "#dc3545",
+        warning: "#ffc107",
+        info: "#17a2b8",
+        airbnb: {
+          primary: "#FF385C",
+          secondary: "#00A699",
+          dark: "#484848",
+          light: "#F7F7F7",
+          gray: {
+            100: "#F7F7F7",
+            200: "#DDDDDD",
+            300: "#717171",
+            400: "#484848",
+          },
         },
         rose: {
-          50: '#fff1f2',
-          100: '#ffe4e6',
-          200: '#fecdd3',
-          300: '#fda4af',
-          400: '#fb7185',
-          500: '#f43f5e',
-          600: '#e11d48',
-          700: '#be123c',
-          800: '#9f1239',
-          900: '#881337',
-          950: '#4c0519',
+          50: "#fff1f2",
+          100: "#ffe4e6",
+          200: "#fecdd3",
+          300: "#fda4af",
+          400: "#fb7185",
+          500: "#f43f5e",
+          600: "#e11d48",
+          700: "#be123c",
+          800: "#9f1239",
+          900: "#881337",
+          950: "#4c0519",
         },
         pink: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899',
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
-          950: '#500724',
+          50: "#fdf2f8",
+          100: "#fce7f3",
+          200: "#fbcfe8",
+          300: "#f9a8d4",
+          400: "#f472b6",
+          500: "#ec4899",
+          600: "#db2777",
+          700: "#be185d",
+          800: "#9d174d",
+          900: "#831843",
+          950: "#500724",
         },
       },
       fontFamily: {
-        sans: ['Noto Sans KR', 'Montserrat', 'sans-serif'],
+        sans: ["Noto Sans KR", "Montserrat", "sans-serif"],
       },
       boxShadow: {
-        'airbnb': '0 6px 16px rgba(0, 0, 0, 0.12)',
-        'airbnb-sm': '0 2px 8px rgba(0, 0, 0, 0.08)',
+        airbnb: "0 6px 16px rgba(0, 0, 0, 0.12)",
+        "airbnb-sm": "0 2px 8px rgba(0, 0, 0, 0.08)",
       },
       borderRadius: {
-        'airbnb': '12px',
+        airbnb: "12px",
       },
       container: {
         center: true,
         padding: {
-          DEFAULT: '1rem',
-          sm: '2rem',
-          lg: '4rem',
-          xl: '5rem',
+          DEFAULT: "1rem",
+          sm: "2rem",
+          lg: "4rem",
+          xl: "5rem",
         },
       },
       animation: {
+        // feature/32-festival 브랜치에서 추가된 것 + develop 브랜치에서 추가된 것 모두 병합
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.5s ease-in-out',
         'modal-in': 'modal-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'modal-out': 'modal-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'festival-nav-bg': 'festival-nav-bg 1s ease-in-out forwards',
+        'festival-nav-fg': 'festival-nav-fg 1s ease-in-out forwards',
         'scan-line': 'scan-line 2s ease-in-out infinite',
         'modal-scale': 'modal-scale 0.3s ease-out forwards',
         'bounce-short': 'bounce-short 1s ease-in-out 2',
@@ -101,21 +106,31 @@ module.exports = {
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
         slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          "0%": { transform: "translateY(20px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
         },
-        'modal-in': {
-          '0%': { opacity: '0', transform: 'translateY(16px) scale(0.98)' },
-          '60%': { opacity: '1', transform: 'translateY(-6px) scale(1.01)' },
-          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        "modal-in": {
+          "0%": { opacity: "0", transform: "translateY(16px) scale(0.98)" },
+          "60%": { opacity: "1", transform: "translateY(-6px) scale(1.01)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
-        'modal-out': {
-          '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
-          '100%': { opacity: '0', transform: 'translateY(16px) scale(0.98)' },
+        "modal-out": {
+          "0%": { opacity: "1", transform: "translateY(0) scale(1)" },
+          "100%": { opacity: "0", transform: "translateY(16px) scale(0.98)" },
+        },
+        "festival-nav-bg": {
+          "0%": { opacity: "1", width: "33.3%" },
+          "20%": { opacity: "1", width: "33.3%" },
+          "100%": { opacity: "1", width: "200%" },
+        },
+        "festival-nav-fg": {
+          "0%": { opacity: "0" },
+          "20%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
         'scan-line': {
           '0%': { transform: 'translateY(0)', opacity: '1' },
@@ -143,50 +158,50 @@ module.exports = {
     },
   },
   plugins: [
-    // 스크롤바 스타일링을 위한 플러그인
-    function({ addUtilities }) {
+    // 스크롤바 스타일링 플러그인
+    function ({ addUtilities }) {
       const newUtilities = {
-        '.scrollbar-thin': {
-          scrollbarWidth: 'thin',
-          '&::-webkit-scrollbar': {
-            width: '6px',
-            height: '6px',
+        ".scrollbar-thin": {
+          scrollbarWidth: "thin",
+          "&::-webkit-scrollbar": {
+            width: "6px",
+            height: "6px",
           },
         },
-        '.scrollbar-thumb-gray-300': {
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#d1d5db',
-            borderRadius: '3px',
+        ".scrollbar-thumb-gray-300": {
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#d1d5db",
+            borderRadius: "3px",
           },
         },
-        '.scrollbar-track-gray-100': {
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#f3f4f6',
+        ".scrollbar-track-gray-100": {
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#f3f4f6",
           },
         },
-        '.custom-scrollbar': {
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#d1d5db #f3f4f6',
-          '&::-webkit-scrollbar': {
-            width: '8px',
-            height: '8px',
+        ".custom-scrollbar": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "#d1d5db #f3f4f6",
+          "&::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
           },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#f3f4f6',
-            borderRadius: '4px',
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#f3f4f6",
+            borderRadius: "4px",
           },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#d1d5db',
-            borderRadius: '4px',
-            '&:hover': {
-              backgroundColor: '#9ca3af',
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#d1d5db",
+            borderRadius: "4px",
+            "&:hover": {
+              backgroundColor: "#9ca3af",
             },
           },
         },
-      }
-      addUtilities(newUtilities, ['responsive', 'hover'])
+      };
+      addUtilities(newUtilities, ["responsive", "hover"]);
     },
-    // original 테마 클래스 추가
+    // develop 브랜치에서 추가된 original 테마 클래스 플러그인
     function({ addVariant }) {
       addVariant('original', '.original &');
     }
@@ -195,4 +210,3 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-} 

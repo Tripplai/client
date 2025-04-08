@@ -238,11 +238,7 @@ const NavSection = () => {
                   className={getInputTextClasses()}
                 />
               </div>
-              <Button 
-                variant="primary"
-                size="sm"
-                className="ml-2 rounded-full"
-              >
+              <Button variant="primary" size="sm" className="ml-2 rounded-full">
                 <FaSearch className="text-sm" />
               </Button>
             </div>
@@ -250,6 +246,12 @@ const NavSection = () => {
         </div>
 
         <div className="flex items-center gap-1 md:gap-3">
+          <Link
+            href="/festival"
+            className="hidden md:block text-gray-600 text-sm font-medium hover:text-gray-900 px-3 py-2 rounded-full hover:bg-gray-50 transition-colors"
+          >
+            축제
+          </Link>
           <Link
             href="/recommendation"
             className={getLinkClasses()}
@@ -268,25 +270,25 @@ const NavSection = () => {
           >
             리뷰보기
           </Link>
-          <Link href="/dashboard" className="hidden md:block">
-            <Button
-              variant="outline"
-              size="sm"
-              className={`font-semibold ${getDashboardTextClass()}`}
-            >
-              <span>AI 여행 계획</span>
-            </Button>
-          </Link>
+        <Link href="/dashboard" className="hidden md:block">
+  <Button
+    variant="outline"
+    size="sm"
+    className={`font-medium font-semibold ${getDashboardTextClass()}`}
+  >
+    <span>AI 여행 계획</span>
+  </Button>
+</Link>
 
-          <Link href="/dashboard" className="md:hidden">
-            <Button
-              variant="primary"
-              size="sm"
-              className="text-xs border-0"
-            >
-              AI 여행
-            </Button>
-          </Link>
+<Link href="/dashboard" className="md:hidden">
+  <Button
+    variant="primary"
+    size="sm"
+    className="text-xs border-0"
+  >
+    AI 여행
+  </Button>
+</Link>
 
           <Button
             variant="outline"
