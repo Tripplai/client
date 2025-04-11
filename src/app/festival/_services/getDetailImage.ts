@@ -6,7 +6,7 @@ export default async function getDetailImage(id: string) {
   const params: DetailImageParam = {
     contentId: id,
     MobileOS: "ETC",
-    MobileApp: "Tripplai",
+    MobileApp: process.env.NEXT_PUBLIC_SERVICE_NAME!,
     _type: "json",
     serviceKey: process.env.NEXT_PUBLIC_TOUR_API_KEY!,
     subImageYN: "Y",

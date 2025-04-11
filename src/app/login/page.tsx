@@ -7,6 +7,8 @@ import Layout from "@/components/Layout";
 import LoginComponent from "@/components/login/Login";
 import Link from "next/link";
 
+const logo = process.env.NEXT_PUBLIC_SERVICE_NAME;
+
 export default function Login() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -35,7 +37,7 @@ export default function Login() {
         <div className="max-md:hidden">
           <Link href="/">
             <h1 className="text-3xl lg:text-5xl xl:text-7xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-              TripPlanner AI
+              {logo}
             </h1>
           </Link>
           <span className="text-sm lg:text-xl xl:text-2xl text-center w-full block text-gray-600 mt-2 tracking-wide">
