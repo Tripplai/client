@@ -1,12 +1,9 @@
 import Link from "next/link";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { Metadata } from "next";
 
 /* before:bg-[url('/images/festival/2.jpg')] 에 동적 url이 들어갈 수 없어서(문자열로 들어가는듯) 하드코딩함.. */
 
-export const metadata: Metadata = {
-  title: "축제"
-};
+const logo = process.env.NEXT_PUBLIC_SERVICE_NAME;
 
 export default function Festival() {
   return (
@@ -14,7 +11,7 @@ export default function Festival() {
       <Link href="/" className="fixed left-16 top-10 flex items-center group z-20">
         <FaMapMarkedAlt className="text-rose-500 text-3xl mr-2 transition-transform group-hover:scale-110 duration-300" />
         <span className="text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-          TripPlanner AI
+          {logo}
         </span>
       </Link>
       <div className="w-dvw h-dvh flex items-center justify-center">

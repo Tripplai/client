@@ -7,7 +7,7 @@ export default async function getDetailInfo(id: string) {
     contentId: id,
     contentTypeId: "15",
     MobileOS: "ETC",
-    MobileApp: "Tripplai",
+    MobileApp: process.env.NEXT_PUBLIC_SERVICE_NAME!,
     _type: "json",
     serviceKey: process.env.NEXT_PUBLIC_TOUR_API_KEY!,
   }

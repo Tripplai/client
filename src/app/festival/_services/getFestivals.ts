@@ -8,7 +8,7 @@ export default async function getFestivals() {
     numOfRows: 2000,
     pageNo: 1,
     MobileOS: "ETC",
-    MobileApp: "Tripplai",
+    MobileApp: process.env.NEXT_PUBLIC_SERVICE_NAME!,
     _type: "json",
     listYN: "Y",
     eventStartDate: getLastYearDate(),

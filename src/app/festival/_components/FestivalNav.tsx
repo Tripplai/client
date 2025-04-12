@@ -7,6 +7,8 @@ import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import clsx from "clsx";
 import { useState } from "react";
 
+const logo = process.env.NEXT_PUBLIC_SERVICE_NAME;
+
 const items = [
   { titile: "축제리스트", href: "/festival/list" },
   { titile: "축제지도", href: "/festival/map" },
@@ -23,7 +25,7 @@ export default function FestivalNav() {
       <Link href="/" className="flex items-center group">
         <FaMapMarkedAlt className="text-rose-500 text-3xl mr-2 transition-transform group-hover:scale-110 duration-300" />
         <span className="text-nowrap text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-          TripPlanner AI
+          {logo}
         </span>
       </Link>
 
