@@ -256,6 +256,10 @@ const NavSection = () => {
         </div>
 
         <div className="flex items-center gap-1 md:gap-3">
+          <Link href="/week" className={getLinkClasses()}>
+            주간 여행지
+          </Link>
+        
           {/* ✅ 축제 드롭다운 메뉴 */}
           <div
             className="relative hidden md:block"
@@ -296,6 +300,7 @@ const NavSection = () => {
               </div>
             )}
           </div>
+
           <Link href="/recommendation" className={getLinkClasses()}>
             여행 코스
           </Link>
