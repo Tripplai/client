@@ -253,10 +253,10 @@ const NavSection = () => {
         </div>
 
         <div className="flex items-center gap-1 md:gap-3">
-          <Link
-            href="/festival"
-            className="hidden md:block text-gray-600 text-sm font-medium hover:text-gray-900 px-3 py-2 rounded-full hover:bg-gray-50 transition-colors"
-          >
+          <Link href="/week" className={getLinkClasses()}>
+            주간 여행지
+          </Link>
+          <Link href="/festival" className={getLinkClasses()}>
             축제
           </Link>
           <Link href="/recommendation" className={getLinkClasses()}>
