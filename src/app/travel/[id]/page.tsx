@@ -847,18 +847,18 @@ export default function TravelPlanDetail() {
                           <div className="w-[70%] pl-[35px] pr-[10px] flex flex-col min-h-0">
                             {/* 상단: 장소명 및 주소 */}
                             <div className="flex items-start mb-3">
-                              <div className={`w-[60px] h-[60px] rounded-full ${colorMode === 'dark' ? 'bg-[#333]' : 'bg-gray-100'} flex items-center justify-center mr-4 flex-shrink-0`}>
-                                <FaMapMarkerAlt size={28} className="text-[#56a8c6]" />
-                              </div>
+                                <div className={`w-[60px] h-[60px] rounded-full ${colorMode === 'dark' ? 'bg-[#333]' : 'bg-gray-100'} flex items-center justify-center mr-4 flex-shrink-0`}>
+                                  <FaMapMarkerAlt size={28} className="text-[#56a8c6]" />
+                                </div>
                               <div className="min-w-0 overflow-hidden">
                                 <h3 className={`text-[28px] font-bold ${colorMode === 'dark' ? 'text-white' : 'text-gray-900'} leading-tight truncate`}>
-                                  {spotsList[currentSpotIndex].title || spotsList[currentSpotIndex].name}
-                                </h3>
-                                <p className={`${colorMode === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm flex items-center mt-1 truncate`}>
-                                  <FaMapMarkerAlt className="mr-1 flex-shrink-0" size={12} />
-                                  <span className="truncate">{spotsList[currentSpotIndex].addr1 || spotsList[currentSpotIndex].address || '여행지'}</span>
-                                </p>
-                              </div>
+                                    {spotsList[currentSpotIndex].title || spotsList[currentSpotIndex].name}
+                                  </h3>
+                                  <p className={`${colorMode === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm flex items-center mt-1 truncate`}>
+                                    <FaMapMarkerAlt className="mr-1 flex-shrink-0" size={12} />
+                                    <span className="truncate">{spotsList[currentSpotIndex].addr1 || spotsList[currentSpotIndex].address || '여행지'}</span>
+                                  </p>
+                                </div>
                             </div>
                             
                             {/* 정보 섹션 전체 재구성 */}
@@ -870,9 +870,9 @@ export default function TravelPlanDetail() {
                                 <div className="flex items-center">
                                   <p className={`${colorMode === 'dark' ? 'text-gray-300' : 'text-gray-500'} text-base mr-2`}>코스</p>
                                   <p className={`${colorMode === 'dark' ? 'text-white' : 'text-gray-900'} text-[22px] font-medium`}>{currentSpotIndex+1}</p>
-                                </div>
                               </div>
-                              
+                            </div>
+                            
                               {/* 이동수단별 시간 정보 */}
                               {routeInfo && (
                                 <div className="flex gap-2 mb-3">
@@ -880,13 +880,13 @@ export default function TravelPlanDetail() {
                                     <div className={`flex items-center px-3 py-1.5 rounded-md ${colorMode === 'dark' ? 'bg-blue-900/40 text-blue-300' : 'bg-blue-100 text-blue-800'}`}>
                                       <FaCar size={14} className="mr-1.5" />
                                       <span className="text-sm font-medium">{routeInfo.driving.formattedDuration}</span>
-                                    </div>
+                              </div>
                                   )}
                                   {routeInfo.transit && (
                                     <div className={`flex items-center px-3 py-1.5 rounded-md ${colorMode === 'dark' ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-800'}`}>
                                       <FaBus size={14} className="mr-1.5" />
                                       <span className="text-sm font-medium">{routeInfo.transit.formattedDuration}</span>
-                                    </div>
+                              </div>
                                   )}
                                   {routeInfo.walking && (
                                     <div className={`flex items-center px-3 py-1.5 rounded-md ${colorMode === 'dark' ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-800'}`}>
@@ -944,7 +944,7 @@ export default function TravelPlanDetail() {
                             <div className="flex w-[70%] pl-2 pr-6 py-0.5">
                               <div className="flex-shrink-0 w-7 flex justify-center">
                                 <FaMapMarkerAlt size={15} className={`${colorMode === 'dark' ? 'text-blue-400' : 'text-blue-500'} mt-0.5`} />
-                              </div>
+                      </div>
                               <div className="min-w-0 flex-1">
                                 <p className={`text-sm ${colorMode === 'dark' ? 'text-blue-100' : 'text-gray-700'} truncate`}>
                                   <span className="font-medium mr-1">출발지:</span>
@@ -954,8 +954,8 @@ export default function TravelPlanDetail() {
                                       ? currentDeparturePoint
                                       : (previousSpot?.addr1 || previousSpot?.address || (previousSpot?.title || previousSpot?.name))}
                                 </p>
-                              </div>
-                            </div>
+                    </div>
+                  </div>
                           </div>
                         ) : null}
                         

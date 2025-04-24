@@ -2,6 +2,7 @@
 
 import { Box, Container, Heading, Image, Text } from '@chakra-ui/react'
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa'
+import Link from 'next/link'
 
 const recommendedCourses = [
   {
@@ -64,35 +65,37 @@ const recommendedCourses = [
 
 export default function RecommendedCoursesSection() {
   return (
-    <Box as="section" className="section">
+    <Box as="section" className="section" id="recommended-courses">
       <Container className="section-container">
         <Heading as="h2" className="section-title">
-          AI 추천 인기 여행 코스
+          추천 인기 여행 코스
         </Heading>
         
         <Box className="festival-grid">
           {recommendedCourses.map((course) => (
-            <Box key={course.id} className="festival-card">
-              <Box className="festival-image">
-                <Image
-                  src={course.image}
-                  alt={course.title}
-                />
-              </Box>
-              <Box className="festival-content">
-                <Text className="festival-title">
-                  {course.title}
-                </Text>
-                <Box className="festival-date" display="flex" alignItems="center">
-                  <Box as={FaClock} mr={2} />
-                  <Text>{course.duration}</Text>
+            <Link key={course.id} href={`/travel/popular/${course.id}`} style={{ textDecoration: 'none' }}>
+              <Box className="festival-card" cursor="pointer" _hover={{ transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }}>
+                <Box className="festival-image">
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                  />
                 </Box>
-                <Box className="festival-location" display="flex" alignItems="center">
-                  <Box as={FaMapMarkerAlt} className="festival-location-icon" />
-                  <Text>{course.location}</Text>
+                <Box className="festival-content">
+                  <Text className="festival-title">
+                    {course.title}
+                  </Text>
+                  <Box className="festival-date" display="flex" alignItems="center">
+                    <Box as={FaClock} mr={2} />
+                    <Text>{course.duration}</Text>
+                  </Box>
+                  <Box className="festival-location" display="flex" alignItems="center">
+                    <Box as={FaMapMarkerAlt} className="festival-location-icon" />
+                    <Text>{course.location}</Text>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            </Link>
           ))}
         </Box>
       </Container>
