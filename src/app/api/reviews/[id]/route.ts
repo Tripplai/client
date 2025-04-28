@@ -11,9 +11,9 @@ const locationImageCounts: Record<string, number> = {
 };
 
 // GET 요청 처리 - 특정 ID의 리뷰 가져오기
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;  
+    const { id } = await context.params;   // ✅ 여기에서 params 자체를 await 해야 해!
 
     // 모의 지연 추가
     await new Promise(resolve => setTimeout(resolve, 300));
