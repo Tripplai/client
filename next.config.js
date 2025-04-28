@@ -16,7 +16,7 @@ const nextConfig = {
     domains: ['cdn.pixabay.com', 'apis.data.go.kr'],
     unoptimized: true
   },
-  serverExternalPackages: ['tesseract.js'], // 이건 정상
+  serverComponentsExternalPackages: ['tesseract.js'],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
