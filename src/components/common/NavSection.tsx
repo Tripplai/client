@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Button from "@/components/common/Button";
-import useThemeMode, { ThemeMode } from "@/hooks/useDarkMode";
+import useThemeMode from "@/hooks/useDarkMode";
 import dynamic from "next/dynamic";
 import clsx from "clsx"; //디자인 추가
 
@@ -19,6 +19,7 @@ const NavSection = () => {
   const [scrolled, setScrolled] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isFestivalMenuOpen, setIsFestivalMenuOpen] = useState(false);
+  const [isPlanMenuOpen, setIsPlanMenuOpen] = useState(false);
   const { data: session } = useSession();
   const { themeMode, cycleTheme, isLoading } = useThemeMode();
 
@@ -301,8 +302,8 @@ const NavSection = () => {
             )}
           </div>
 
-          <Link href="/recommendation" className={getLinkClasses()}>
-            여행 코스
+          <Link href="/popular-courses" className={getLinkClasses()}>
+            추천 인기 여행코스
           </Link>
           <Link href="/destinations" className={getLinkClasses()}>
             인기 여행지
@@ -310,11 +311,40 @@ const NavSection = () => {
           <Link href="/reviews" className={getLinkClasses()}>
             리뷰보기
           </Link>
-          <Link href="/dashboard" className="hidden md:block">
-            <Button variant="outline" size="sm" className={`font-medium font-semibold ${getDashboardTextClass()}`}>
-              <span>AI 여행 계획</span>
-            </Button>
-          </Link>
+          
+          {/* AI 여행 계획 드롭다운 메뉴 */}
+          <div
+            className="relative hidden md:block"
+            onMouseEnter={() => setIsPlanMenuOpen(true)}
+            onMouseLeave={() => setIsPlanMenuOpen(false)}
+          >
+            <Link href="/dashboard" className="block">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={`font-medium font-semibold ${getDashboardTextClass()}`}
+              >
+                <span>AI 여행 계획</span>
+              </Button>
+            </Link>
+
+            {isPlanMenuOpen && (
+              <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md z-50">
+                <Link
+                  href="/dashboard"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white"
+                >
+                  AI 여행 계획
+                </Link>
+                <Link
+                  href="/dashboard/favorite-courses"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white"
+                >
+                  내가 찜한 인기여행코스
+                </Link>
+              </div>
+            )}
+          </div>
 
           <Link href="/dashboard" className="md:hidden">
             <Button variant="primary" size="sm" className="text-xs border-0">

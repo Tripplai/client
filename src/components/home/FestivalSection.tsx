@@ -3,6 +3,7 @@
 import { Box, Container, Heading, Image, Text } from '@chakra-ui/react'
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa'
 import Link from 'next/link'
+import Button from '@/components/common/Button'
 
 const recommendedCourses = [
   {
@@ -70,6 +71,18 @@ export default function RecommendedCoursesSection() {
         <Heading as="h2" className="section-title">
           추천 인기 여행 코스
         </Heading>
+        
+        <Box textAlign="center" mt={4} mb={6}>
+          <Link href="/popular-courses" passHref legacyBehavior>
+            <Button 
+              variant="primary" 
+              size="lg"
+              className="ml-2 hover:bg-pink-600"
+            >
+              더 많은 코스 보기
+            </Button>
+          </Link>
+        </Box>
         
         <Box className="festival-grid">
           {recommendedCourses.map((course) => (
