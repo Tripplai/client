@@ -33,7 +33,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://43.200.177.95/api/:path*', // 실제 API 서버
+        destination: 'http://3.39.0.103/api/:path*', // 실제 API 서버
       },
     ];
   },
