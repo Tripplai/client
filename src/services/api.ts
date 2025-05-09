@@ -1,6 +1,4 @@
 import axios from 'axios';
-// import { Resume, CreateResumeRequest, UpdateResumeRequest } from '@/types';
-import { getSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000';
@@ -21,17 +19,10 @@ console.log('FastAPI URL:', FASTAPI_URL);
 
 // Request interceptor for adding auth token
 api.interceptors.request.use(async (config) => {
-  // NextAuth 세션에서 토큰 가져오기
-  const session = await getSession();
-  const token = session?.user?.accessToken as string;
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  const accessToken = localStorage.getItem('accessToken')
+  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   return config;
 });
-
-// 이력서 API 삭제
 
 // TravelRecommendation 타입 정의
 interface TravelPlanData {
@@ -101,11 +92,11 @@ export const recommendationApi = {
 
 export const authApi = {
   /** 일반 로그인 */
-  login: async (credentials: Record<string, string> | undefined) => {
+  login: async (email: string, password: string) => {
     try {
       const res = await axios.post(`${API_URL}/auth/login`, {
-        email: credentials?.email,
-        password: credentials?.password,
+        email,
+        password,
       })
       return res.data
     } catch (error) {
@@ -180,5 +171,33 @@ export const infoApi = {
   /** 회원 정보 수정하기 */
   updateInfo: () => {
 
+  },
+}
+
+export const paymentApi = {
+  /** 결제 임시 저장 */
+  payTempStore: (orderId: string, amount: string) => {
+    return api.post('/api/temp', {
+      orderId,
+      amount
+    })
+  },
+
+  /** 결제 임시 저장 확인 */
+  payTempCheck: (orderId: string, amount: string) => {
+    return api.post('/api/temp', {
+      // todo api 수정 필요 
+      orderId,
+      amount
+    })
+  },
+
+  /** 결제 확인 */
+  payConfirm: (paymentKey: string, orderId: string, amount: string) => {
+    return api.post('/api/confirm', {
+      paymentKey,
+      orderId,
+      amount
+    })
   },
 }

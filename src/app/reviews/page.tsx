@@ -37,12 +37,7 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
           <CreateReviewButton />
         </div>
 
-        <ReviewsWrapper
-          reviews={reviews}
-          totalCount={totalElements}
-          page={page}
-          pageSize={pageSize}
-        />
+        <ReviewsWrapper reviews={reviews} totalCount={totalElements} page={page} pageSize={pageSize} />
       </div>
     </div>
   );
