@@ -263,13 +263,15 @@ const NavSection = () => {
             onMouseLeave={() => setIsFestivalMenuOpen(false)}
           >
             <span
-              className={clsx(
-                "text-sm font-medium px-3 py-2 hover:bg-gray-50 transition-colors",
-                themeMode === "dark"
-                  ? "text-white hover:bg-gray-800"
-                  : "text-gray-600 hover:text-gray-900"
-              )}
-            >
+  className={clsx(
+    "text-sm font-medium px-3 py-2 transition-colors",
+    themeMode === "dark"
+      ? "text-white hover:bg-gray-800"
+      : themeMode === "light"
+      ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+      : "text-pink-500 hover:text-pink-600 hover:bg-pink-50"
+  )}
+>
               축제
             </span>
 
