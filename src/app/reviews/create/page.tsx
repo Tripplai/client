@@ -255,8 +255,9 @@ export default function CreateReviewPage() {
               ref={fileInputRef}
               onChange={handleImageUpload}
               className="hidden"
+              title="여행 사진을 업로드하세요"
+              placeholder="여행 사진"
             />
-
             <div className="flex flex-wrap gap-4 mb-4">
               {images.map((img, index) => (
                 <div key={index} className="relative w-24 h-24 rounded-md overflow-hidden">
@@ -265,6 +266,7 @@ export default function CreateReviewPage() {
                     type="button"
                     onClick={() => setImages(images.filter((_, i) => i !== index))}
                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                    title="사진 삭제"
                   >
                     &times;
                   </button>
@@ -299,6 +301,8 @@ export default function CreateReviewPage() {
               ref={receiptInputRef}
               onChange={handleReceiptUpload}
               className="hidden"
+              title="영수증 또는 입장권 이미지를 업로드하세요"
+              placeholder="영수증 또는 입장권 이미지"
             />
 
             <div className="flex items-center justify-center mb-4">

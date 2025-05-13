@@ -161,6 +161,8 @@ export default function HeroSection() {
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="출발일을 선택하세요"
+                    title="출발일"
                   />
                 </div>
                 
@@ -174,6 +176,8 @@ export default function HeroSection() {
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="도착일을 선택하세요"
+                    title="도착일"
                   />
                 </div>
                 
@@ -186,10 +190,10 @@ export default function HeroSection() {
                   <div className="flex gap-3">
                     <div className="w-1/2">
                       <select 
-                        className="w-full px-2 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-gray-300 dark:border-gray-600 rounded-lg"
+                        className="w-full px-2 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-gray-300 dark:border-gray-600 rounded-lg pr-6"
                         value={adults}
                         onChange={(e) => setAdults(e.target.value)}
-                        style={{ paddingRight: '25px' }}
+                        title="성인 인원 선택"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                           <option key={num} value={num}>{num}명 성인</option>
@@ -198,10 +202,10 @@ export default function HeroSection() {
                     </div>
                     <div className="w-1/2">
                       <select 
-                        className="w-full px-2 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-gray-300 dark:border-gray-600 rounded-lg"
+                        className="w-full px-2 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-gray-300 dark:border-gray-600 rounded-lg pr-6"
                         value={children}
                         onChange={(e) => setChildren(e.target.value)}
-                        style={{ paddingRight: '25px' }}
+                        title="어린이 인원 선택"
                       >
                         {[0, 1, 2, 3, 4, 5, 6].map(num => (
                           <option key={num} value={num}>{num}명 어린이</option>

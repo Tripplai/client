@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import CreateReviewModal from "@/components/reviews/CreateReviewModal";
+//import CreateReviewModal from "@/components/reviews/CreateReviewModal";
 import { createReview } from "@/services/reviewService";
+import dynamic from 'next/dynamic';
+
+const NoSSRCreateReviewModal = dynamic(() => import('./CreateReviewModal'), {
+  ssr: false,
+});
 
 export default function CreateReviewButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +78,7 @@ export default function CreateReviewButton() {
         <span>리뷰 작성하기</span>
       </button>
 
-      <CreateReviewModal
+      <NoSSRCreateReviewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}

@@ -11,12 +11,12 @@ export interface Review {
   createdAt: string;
   nickname: string;
   images: ReviewImage[];
-  address?: string; // 🔧 이 줄 추가
+  address?: string;
 }
 
 export interface ReviewListResponse {
-  reviews: Review[];
-  totalCount: number;
+  reviews: Review[];   // 기존: content를 reviews로 리네이밍했음
+  totalCount: number;  // totalElements
   size: number;
   number: number;
 }

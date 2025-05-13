@@ -501,19 +501,23 @@ export default function CreateTravelPlan() {
                           <div>
                             <label className="block text-sm text-gray-600 mb-1">출발일</label>
                             <input
-                            type="date"
+                              type="date"
                               value={startDate}
                               onChange={(e) => setStartDate(e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="출발일을 선택하세요"
+                              title="출발일"
                             />
                           </div>
                           <div>
                             <label className="block text-sm text-gray-600 mb-1">도착일</label>
                             <input
-                            type="date"
+                              type="date"
                               value={endDate}
                               onChange={(e) => setEndDate(e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              title="도착일"
+                              placeholder="도착일을 선택하세요"
                             />
                           </div>
                         </div>

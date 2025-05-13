@@ -271,6 +271,8 @@ const DepartureModal: React.FC<DepartureModalProps> = ({
               onClick={handleSearch}
               className={`p-3 border-0 outline-none ${getButtonStyle(true)}`}
               disabled={isLoading}
+              title="검색"
+              aria-label="검색"
             >
               <FaSearch />
             </button>

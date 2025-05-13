@@ -5,8 +5,14 @@ import Link from 'next/link';
 import { FaPlus } from 'react-icons/fa';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import Pagination from '@/components/common/Pagination';
-import CreateReviewModal from '@/components/reviews/CreateReviewModal';
+// import CreateReviewModal from '@/components/reviews/CreateReviewModal';
 import useThemeMode from '@/hooks/useDarkMode';
+import dynamic from 'next/dynamic';
+
+
+const CreateReviewModal = dynamic(() => import('./CreateReviewModal'), {
+  ssr: false,
+});
 
 interface ReviewsWrapperProps {
   reviews: any[];
@@ -36,7 +42,7 @@ export function NoReviewsFound() {
 }
 
 export function ReviewsWrapper({ reviews, totalCount, page, pageSize }: ReviewsWrapperProps) {
-  if (reviews.length === 0) {
+  if (!Array.isArray(reviews) || reviews.length === 0) {
     return <NoReviewsFound />;
   }
   

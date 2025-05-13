@@ -24,15 +24,20 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
     const fetchImages = async () => {
       try {
         setIsLoadingImages(true);
-        const keyword = review.tags?.[0] || "";
-        const tag = review.tags?.join(",") || "";
+        const keyword = (review as any).tags?.[0] || "";
+        const tag = (review as any).tags?.join(",") || "";
 
-        const images = await getImagesByKeyword(review.location, keyword, tag);
-        const uniqueApiImages = images.filter((apiImg) => !review.images?.includes(apiImg));
+        const images = await getImagesByKeyword((review as any).location, keyword, tag);
+        const uniqueApiImages = images.filter(
+          (apiImg) =>
+            !review.images?.some(
+              (img: any) => (typeof img === "string" ? img : img.imageUrl) === apiImg
+            )
+        );
 
         setApiImages(uniqueApiImages);
         if (review.images?.length > 0) {
-          setSelectedImage(review.images[0]);
+          setSelectedImage((review as any).images[0]);
         } else if (uniqueApiImages.length > 0) {
           setSelectedImage(uniqueApiImages[0]);
         } else {
@@ -53,7 +58,10 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
   const handleImageError = (imageSrc: string) => {
     setImageError((prev) => ({ ...prev, [imageSrc]: true }));
     if (selectedImage === imageSrc) {
-      const candidates = [...(review.images || []), ...apiImages];
+      const candidates = [
+        ...(review.images?.map((img: any) => typeof img === "string" ? img : img.imageUrl) || []),
+        ...apiImages
+      ];
       const nextValid = candidates.find((img) => !imageError[img]) || fallbackImage;
       setSelectedImage(nextValid);
     }
@@ -86,8 +94,8 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
           {review.images.map((img, idx) => (
             <div
               key={idx}
-              className={`relative w-20 h-20 cursor-pointer ${selectedImage === img ? "ring-2 ring-pink-500" : ""}`}
-              onClick={() => setSelectedImage(img)}
+              className={`relative w-20 h-20 cursor-pointer ${selectedImage === img.imageUrl ? "ring-2 ring-pink-500" : ""}`}
+              onClick={() => setSelectedImage(img.imageUrl)}
             >
               <Image src={img.imageUrl} alt={`썸네일 ${idx + 1}`} fill className="object-cover rounded" unoptimized />
             </div>
@@ -108,7 +116,7 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
           </div>
           <div className="flex items-center">
             <FaMapMarkerAlt className="text-pink-500 mr-1" />
-            <span>{review.location}</span>
+            <span>{(review as any).location}</span>
           </div>
         </div>
 
@@ -116,8 +124,8 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
         <div className="flex items-center mb-4">
           <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3">
             <Image
-              src={review.author?.avatar || "/images/default-profile.png"}
-              alt={review.author?.name || "작성자"}
+              src={(review as any).author?.avatar || "/images/default-profile.png"}
+              alt={(review as any).author?.name || "작성자"}
               fill
               className="object-cover"
               unoptimized
@@ -127,15 +135,15 @@ export default function ReviewDetail({ review }: ReviewDetailProps) {
               }}
             />
           </div>
-          <span className="font-medium">{review.author?.name || "익명"}</span>
+          <span className="font-medium">{(review as any).author?.name || "익명"}</span>
         </div>
 
         <div className="whitespace-pre-line leading-relaxed text-gray-700 mb-6">{review.content}</div>
 
         {/* 태그 */}
-        {review.tags?.length > 0 && (
+        {(review as any).tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-4">
-            {review.tags.map((tag, index) => (
+            {(review as any).tags.map((tag: string, index: number) => (
               <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-600 flex items-center">
                 <FaTag className="text-gray-400 mr-1" size={12} />
                 {tag}

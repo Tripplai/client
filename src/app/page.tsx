@@ -265,10 +265,12 @@ export default function Home() {
                           </svg>
                         </div>
                         <input
-                          type="date"
-                          className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                        />
-                      </div>
+                            type="date"
+                            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
+                            placeholder="출발일을 선택하세요"
+                            title="출발일을 선택하세요"
+                          />
+                        </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">도착일</label>
@@ -290,8 +292,9 @@ export default function Home() {
                         <input
                           type="date"
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                        />
-                      </div>
+                          placeholder="도착일을 선택하세요"
+                          title="도착일을 선택하세요"
+                        />                      </div>
                     </div>
                   </div>
                 </div>
@@ -384,8 +387,9 @@ export default function Home() {
                         value={budget}
                         onChange={handleBudgetChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                    </div>
+                        title="예산 범위 선택"
+                        placeholder="예산 범위 선택"
+                      />                    </div>
                   </div>
 
                   <div className="flex justify-between mt-4">

@@ -1,22 +1,41 @@
-"use client";
+'use client';
 
-// src/app/reviews/page.tsx
-import { getReviews } from "@/services/reviewService";
-import { ReviewsWrapper } from "@/components/reviews/ReviewsClientWrapper";
-import CreateReviewButton from "@/components/reviews/CreateReviewButton";
-import Link from "next/link";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { getReviews } from '@/services/reviewService';
+import { ReviewsWrapper } from '@/components/reviews/ReviewsClientWrapper';
+import CreateReviewButton from '@/components/reviews/CreateReviewButton';
+import Link from 'next/link';
 
-interface ReviewsPageProps {
-  searchParams?: {
-    page?: string;
-  };
-}
 
-export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
-  const page = Number(searchParams?.page || 0);
+export default function ReviewsPage() {
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get('page') || 0);
   const size = 10;
 
-  const { content: reviews, totalElements, size: pageSize } = await getReviews(page, size);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  
+  
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await getReviews(page, size);
+        setReviews(res.content);
+        setTotalCount(res.totalElements);
+      } catch (err) {
+        console.error('리뷰를 가져오는 중 오류 발생:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [page]);
+
+  if (loading) return <div className="text-center py-10">리뷰 로딩 중...</div>;
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
@@ -39,7 +58,7 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
           <CreateReviewButton />
         </div>
 
-        <ReviewsWrapper reviews={reviews} totalCount={totalElements} page={page} pageSize={pageSize} />
+        <ReviewsWrapper reviews={reviews} totalCount={totalCount} page={page} pageSize={size} />
       </div>
     </div>
   );

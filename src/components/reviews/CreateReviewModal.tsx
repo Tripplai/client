@@ -1,8 +1,12 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { FaTimes, FaStar, FaUpload, FaCheck, FaSpinner, FaImage, FaTrash } from 'react-icons/fa';
-import useThemeMode from '@/hooks/useDarkMode';
+import useThemeMode from '@/hooks/useDarkMode'; // 맨 위
+import { createReview } from '@/services/reviewService'; // 상단 import 추가
+  
+
 
 interface CreateReviewModalProps {
   isOpen: boolean;
@@ -72,11 +76,12 @@ const formatLocation = (location: string, parentLocation?: string) => {
 };
 
 export default function CreateReviewModal({ isOpen, onClose, onSubmit, requireProofImage = false }: CreateReviewModalProps) {
+  const { themeMode } = useThemeMode();
+  const modalRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [location, setLocation] = useState('');
   const [rating, setRating] = useState(5);
-  const { themeMode } = useThemeMode();
   
   // 증명 이미지 업로드 관련 상태
   const [proofImage, setProofImage] = useState<File | null>(null);
@@ -90,29 +95,25 @@ export default function CreateReviewModal({ isOpen, onClose, onSubmit, requirePr
   const [reviewImagePreviews, setReviewImagePreviews] = useState<string[]>([]);
   const reviewImagesInputRef = useRef<HTMLInputElement>(null);
 
-  // 모달 트랩 포커스 효과를 위한 ref
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedInfo, setExtractedInfo] = useState<ExtractedTravelInfo>({});
   const [scanPosition, setScanPosition] = useState(0);
 
-  useEffect(() => {
-    // ESC 키로 모달 닫기
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+useEffect(() => {
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') onClose(); // ESC 누르면 모달 닫힘
+  };
+  window.addEventListener('keydown', handleEscape);
+  return () => window.removeEventListener('keydown', handleEscape);
+}, [onClose]);
 
   // 모달 열릴 때 포커스 설정
-  useEffect(() => {
+   useEffect(() => {
     if (isOpen && modalRef.current) {
       modalRef.current.focus();
     }
-  }, [isOpen]);
+  }, [isOpen]); 
 
   // 스캔 애니메이션 효과
   useEffect(() => {
@@ -303,14 +304,63 @@ export default function CreateReviewModal({ isOpen, onClose, onSubmit, requirePr
     setReviewImagePreviews(newPreviews);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // 필수 이미지 체크
-    if (!proofImage) {
-      alert('여행 증명 이미지가 필요합니다. 영수증, 항공권, 버스티켓 등을 업로드해주세요.');
-      return;
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!proofImage) {
+    alert("여행 증명 이미지가 필요합니다.");
+    return;
+  }
+
+  try {
+    const review = {
+      address: location,
+      title,
+      content,
+      rating,
+    };
+
+    const formData = new FormData();
+    formData.append("review", new Blob([JSON.stringify(review)], { type: "application/json" }));
+    reviewImages.forEach((file) => formData.append("images", file));
+
+    await createReview(formData);
+
+    const reviewData = {
+      title,
+      content,
+      location,
+      rating,
+      createdAt: new Date().toISOString(),
+      ...(extractedInfo.date && { startDate: extractedInfo.date }),
+      ...(extractedInfo.date && { endDate: extractedInfo.date }),
+      ...(extractedInfo.storeName && { storeName: extractedInfo.storeName }),
+      ...(extractedInfo.location && { detailedLocation: extractedInfo.location }),
+      ...(extractedInfo.parentLocation && { parentLocation: extractedInfo.parentLocation })
+    };
+
+    // 여기에서 실행해야 맞음
+    onSubmit(reviewData, proofImage, reviewImages);
+
+    // 초기화
+    setTitle('');
+    setContent('');
+    setLocation('');
+    setRating(5);
+    setProofImage(null);
+    setImagePreview(null);
+    setScanComplete(false);
+    setExtractedInfo({});
+    setReviewImages([]);
+    setReviewImagePreviews([]);
+
+    onClose();
+    window.location.reload();
+  } catch (error) {
+    console.error("리뷰 등록 실패:", error);
+    alert("리뷰 등록 중 오류가 발생했습니다.");
+  }
+};
     
     // 추출된 정보를 포함한 리뷰 데이터 구성
     const reviewData = {
@@ -326,9 +376,7 @@ export default function CreateReviewModal({ isOpen, onClose, onSubmit, requirePr
       ...(extractedInfo.location && { detailedLocation: extractedInfo.location }),
       ...(extractedInfo.parentLocation && { parentLocation: extractedInfo.parentLocation })
     };
-    
-    onSubmit(reviewData, proofImage, reviewImages);
-    
+        
     // 폼 초기화
     setTitle('');
     setContent('');
@@ -345,38 +393,42 @@ export default function CreateReviewModal({ isOpen, onClose, onSubmit, requirePr
   };
 
   // 테마에 따른 모달 배경 스타일
-  const getModalStyle = () => {
-    switch (themeMode) {
-      case 'dark':
-        return 'bg-gray-900 border border-gray-700 shadow-2xl';
-      case 'light':
-        return 'bg-white border border-gray-200 shadow-xl';
-      case 'original':
-        return 'bg-white border border-pink-100 shadow-xl';
-      default:
-        return 'bg-white border border-gray-200 shadow-xl';
-    }
-  };
+ /* const getModalStyle = () => {
+  switch (themeMode) { // 🔁 수정됨
+    case 'dark':
+      return 'bg-gray-900 border border-gray-700 shadow-2xl';
+    case 'light':
+      return 'bg-white border border-gray-200 shadow-xl';
+    case 'original':
+      return 'bg-white border border-pink-100 shadow-xl';
+    default:
+      return 'bg-white border border-gray-200 shadow-xl';
+  }
+};
+*/
+
+const getModalStyle = () => {
+  return 'bg-white border border-gray-200 shadow-xl'; // 항상 밝은 테마로
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm transition-all">
       <div
-        ref={modalRef}
+        ref={modalRef} // 🔁 여기에 이게 들어가고
         tabIndex={-1}
         className={`${getModalStyle()} rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden transition-colors duration-300 transform animate-modal-scale`}
       >
+       
+        
         <div className="flex justify-between items-center px-8 py-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">리뷰 작성하기</h2>
-          <button 
-            onClick={onClose} 
-            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-none"
-          >
-            <FaTimes size={20} />
-          </button>
+          
+          
         </div>
+
+        
         
         <div className="overflow-y-auto max-h-[calc(90vh-80px)] custom-scrollbar">
-          <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6">
             {/* 증명 이미지 업로드 영역을 맨 위로 이동 */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
@@ -650,4 +702,3 @@ export default function CreateReviewModal({ isOpen, onClose, onSubmit, requirePr
       </div>
     </div>
   );
-} 
