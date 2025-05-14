@@ -91,16 +91,16 @@ export default function ReviewsSection() {
           <Box className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reviewsData.reviews.length > 0 ? (
               reviewsData.reviews.map((review) => (
-                <Box key={review.id} className="relative">
+                <Box key={(review as any).id} className="relative">
                   <ReviewCard review={review} />
                   <Box className="absolute top-2 right-2 z-10">
                     <ShareButtons
                       title={review.title}
                       description={`${
-                        review.location
+                        (review as any).location
                       } - ${review.content.substring(0, 50)}...`}
-                      url={`/reviews/${review.id}`}
-                      location={review.location}
+                      url={`/reviews/${(review as any).id}`}
+                      location={(review as any).location}
                     />
                   </Box>
                 </Box>

@@ -2,10 +2,11 @@ import axios from 'axios';
 // import { Resume, CreateResumeRequest, UpdateResumeRequest } from '@/types';
 import { getSession } from 'next-auth/react';
 
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
 });
 
@@ -182,3 +183,4 @@ export const infoApi = {
 
   },
 }
+

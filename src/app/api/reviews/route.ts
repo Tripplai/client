@@ -27,12 +27,12 @@ export async function GET(request: NextRequest) {
     
     if (location) {
       filteredReviews = filteredReviews.filter(review =>
-        review.location.toLowerCase().includes(location.toLowerCase())
+        (review as any).location.toLowerCase().includes(location.toLowerCase())
       );
     }
     if (tag) {
       filteredReviews = filteredReviews.filter(review =>
-        review.tags.some((t: string) => t.toLowerCase().includes(tag.toLowerCase())
+        (review as any).tags.some((t: string) => t.toLowerCase().includes(tag.toLowerCase())
       ));
     }
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     filteredReviews = filteredReviews.map(review => {
       let imageLimitCount = 2;
       for (const [loc, count] of Object.entries(locationImageCounts)) {
-        if (review.location.includes(loc)) {
+        if ((review as any).location.includes(loc)) {
           imageLimitCount = count;
           break;
         }
