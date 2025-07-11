@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const path = require("path");
-
+ 
 const nextConfig = {
   transpilePackages: ["@chakra-ui/react", "@chakra-ui/next-js"],
   images: {
@@ -32,11 +32,12 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/:path*",
-        destination: "http://3.34.181.101/:path*",
+        source: "/api/:path*",
+        destination: "http://localhost:8080/api/:path*",
       },
     ];
   },
 };
-
+ 
 module.exports = nextConfig;
+ 
