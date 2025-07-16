@@ -29,14 +29,6 @@ const nextConfig = {
     };
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: "/:path*",
-        destination: "http://3.34.181.101/:path*",
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;

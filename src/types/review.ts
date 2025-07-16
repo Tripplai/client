@@ -1,22 +1,23 @@
-export interface ReviewImage {
-  reviewImageId: number;
-  imageUrl: string;
-}
-
 export interface Review {
-  receiptReviewId: number;
+  id: string;
   title: string;
   content: string;
+  location: string;
+  images: string[];
   rating: number;
+  author: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  tags: string[];
   createdAt: string;
-  nickname: string;
-  images: ReviewImage[];
-  address?: string; // 🔧 이 줄 추가
+  updatedAt: string;
 }
 
 export interface ReviewListResponse {
   reviews: Review[];
   totalCount: number;
-  size: number;
-  number: number;
-}
+  page: number;
+  pageSize: number;
+} 
