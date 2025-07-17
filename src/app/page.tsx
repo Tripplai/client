@@ -153,7 +153,8 @@ export default function Home() {
       {/* 여행 리뷰 섹션 */}
       <ReviewsSection />
 
-      {/* <FestivalSection /> */}
+      {/* 추천 인기 여행 코스 섹션 */}
+      <FestivalSection />
 
       {/* 필터 모달 - Tailwind CSS 사용 */}
       {isOpen && (

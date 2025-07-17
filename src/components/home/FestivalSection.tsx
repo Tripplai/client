@@ -61,7 +61,7 @@ async function filterValidImages(courses: Course[]) {
 
 // API에서 코스 데이터를 가져오는 함수
 async function fetchCourseData(page = 0, limit = 50) {
-  const response = await fetch(`/api/course?page=${page}&limit=${limit}`, {
+  const response = await fetch(`http://localhost:8080/api/course?page=${page}&limit=${limit}`, {
     mode: "cors",
     cache: "no-store",
   });
