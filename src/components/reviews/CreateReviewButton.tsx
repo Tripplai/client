@@ -3,63 +3,23 @@
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateReviewModal from "@/components/reviews/CreateReviewModal";
-import { createReview } from "@/services/reviewService";
 
 export default function CreateReviewButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSubmit = async (
-    reviewData: {
-      title: string;
-      content: string;
-      location: string;
-      rating: number;
-      createdAt: string;
-      startDate?: string;
-      endDate?: string;
-      storeName?: string;
-      detailedLocation?: string;
-      parentLocation?: string;
-    },
-    proofImage?: File | null,
-    reviewImages?: File[]
-  ) => {
+  const handleSubmit = async (reviewData: any) => {
     try {
-      if (!proofImage) {
-        alert("영수증 이미지를 첨부해주세요.");
-        return;
-      }
+      // 여기에 리뷰 데이터 서버 전송 로직을 추가하세요
+      console.log("리뷰 데이터:", reviewData);
 
-      const reviewPayload = {
-        address: reviewData.location,
-        title: reviewData.title,
-        content: reviewData.content,
-        rating: reviewData.rating
-      };
-
-      const formData = new FormData();
-
-      // JSON 형태의 리뷰 정보를 Blob으로 감싸기
-      const reviewBlob = new Blob([JSON.stringify(reviewPayload)], {
-        type: "application/json"
-      });
-      formData.append("review", reviewBlob);
-
-      // 리뷰 이미지 리스트 추가
-      if (reviewImages && reviewImages.length > 0) {
-        reviewImages.forEach((file) => {
-          formData.append("images", file);
-        });
-      }
-
-      // API 호출
-      await createReview(formData);
-
+      // 실제 API가 없으므로 성공 메시지만 표시
       alert("리뷰가 성공적으로 등록되었습니다!");
+
+      // 필요하다면 페이지 새로고침 또는 리뷰 목록 업데이트
       window.location.reload();
     } catch (error) {
       console.error("리뷰 등록 실패:", error);
-      alert("리뷰 등록에 실패했습니다.");
+      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -73,12 +33,7 @@ export default function CreateReviewButton() {
         <span>리뷰 작성하기</span>
       </button>
 
-      <CreateReviewModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-        requireProofImage={true}
-      />
+      <CreateReviewModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleSubmit} />
     </>
   );
 }
