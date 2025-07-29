@@ -3,10 +3,15 @@
 /* 구글 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+/* react-slick */
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 
 /* 테마별 CSS 변수 정의 */
 :root {
