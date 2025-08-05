@@ -12,8 +12,9 @@ const nextConfig = {
       { protocol: "https", hostname: "korean.visitkorea.or.kr" },
       { protocol: "https", hostname: "www.visitkorea.or.kr" },
       { protocol: "https", hostname: "cdn.pixabay.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
-    domains: ["cdn.pixabay.com", "apis.data.go.kr", "tong.visitkorea.or.kr", "43.200.177.95"],
+    domains: ["cdn.pixabay.com", "apis.data.go.kr", "tong.visitkorea.or.kr", "43.200.177.95", "images.unsplash.com"],
     unoptimized: true,
   },
   webpack: (config) => {

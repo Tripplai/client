@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import clsx from "clsx"; //디자인 추가
 import { jwtDecode } from "jwt-decode";
 import { authApi } from "@/services/api";
+import Login from "@/components/login/Login";
 
 const logo = process.env.NEXT_PUBLIC_SERVICE_NAME;
 
@@ -20,6 +21,7 @@ const NavSection = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isFestivalMenuOpen, setIsFestivalMenuOpen] = useState(false);
   const [isPlanMenuOpen, setIsPlanMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { themeMode, cycleTheme, isLoading } = useThemeMode();
 
   // 스크롤 이벤트 리스너
@@ -128,9 +130,7 @@ const NavSection = () => {
   };
 
   const handleLoginClick = () => {
-    if (sessionStorage.getItem("accessToken")) {
-      setOpenModal(!openModal);
-    } else router.push("/login", { scroll: false });
+    setOpenModal(!openModal);
   };
 
   const handleInfoClick = () => {
@@ -325,10 +325,10 @@ const NavSection = () => {
             {isPlanMenuOpen && (
               <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md z-50">
                 <Link
-                  href="/travel/create"
+                  href="/dashboard"
                   className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white"
                 >
-                  AI 여행 계획
+                  AI 여행 계획 보관함
                 </Link>
                 <Link
                   href="/travel/favorite-courses"
@@ -339,20 +339,33 @@ const NavSection = () => {
               </div>
             )}
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-1 flex items-center gap-2"
-            onClick={handleLoginClick}
-            aria-label={sessionStorage.getItem("accessToken") ?? "로그인"}
-          >
-            <FaUserCircle className={getUserIconClasses()} />
-            <span className={`hidden md:block text-sm font-semibold ${getDashboardTextClass()}`}>
-              {!!sessionStorage.getItem("accessToken")
-                ? JSON.parse(jwtDecode(sessionStorage.getItem("accessToken")!).sub!).nickname
-                : "로그인"}
-            </span>
-          </Button>
+          {!sessionStorage.getItem("accessToken") ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-1 flex items-center gap-2"
+              onClick={() => setIsLoginModalOpen(true)}
+              aria-label="로그인"
+            >
+              <FaUserCircle className={getUserIconClasses()} />
+              <span className={`hidden md:block text-sm font-semibold ${getDashboardTextClass()}`}>
+                로그인
+              </span>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-1 flex items-center gap-2"
+              onClick={handleLoginClick}
+              aria-label={JSON.parse(jwtDecode(sessionStorage.getItem("accessToken")!).sub!).nickname}
+            >
+              <FaUserCircle className={getUserIconClasses()} />
+              <span className={`hidden md:block text-sm font-semibold ${getDashboardTextClass()}`}>
+                {JSON.parse(jwtDecode(sessionStorage.getItem("accessToken")!).sub!).nickname}
+              </span>
+            </Button>
+          )}
 
           <button
             className="ml-1 p-2 bg-transparent rounded-full hover:bg-transparent focus:outline-none"
@@ -381,6 +394,23 @@ const NavSection = () => {
           </div>
         ) : null}
       </div>
+
+      {/* 로그인 모달 */}
+      {isLoginModalOpen && (
+        <>
+          {/* 어두운 배경 */}
+          <div 
+            className="fixed top-0 w-dvw h-dvh bg-black opacity-50 z-[9999]"
+            onClick={() => setIsLoginModalOpen(false)}
+          />
+          {/* 중앙 정렬 모달 컨테이너 */}
+          <div className="fixed top-0 w-dvw h-dvh flex items-center justify-center z-[9999]">
+            <div onClick={(e) => e.stopPropagation()}>
+              <Login onLoginSuccess={() => setIsLoginModalOpen(false)} />
+            </div>
+          </div>
+        </>
+      )}
     </header>
   );
 };

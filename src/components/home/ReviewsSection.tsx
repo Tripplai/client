@@ -7,14 +7,18 @@ import ReviewCard from "@/components/reviews/ReviewCard";
 import Button from "@/components/common/Button";
 import { useEffect, useState, useCallback } from "react";
 import { ReviewListResponse } from "@/types/review";
-import ShareButtons from "@/components/common/ShareButtons";
 
 export default function ReviewsSection() {
   const [reviewsData, setReviewsData] = useState<ReviewListResponse>({
-    reviews: [],
-    totalCount: 0,
-    page: 1,
-    pageSize: 3,
+    content: [],
+    totalElements: 0,
+    totalPages: 0,
+    number: 0,
+    size: 3,
+    numberOfElements: 0,
+    first: true,
+    last: true,
+    empty: true,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,28 +30,38 @@ export default function ReviewsSection() {
       setError(null);
 
       console.log("리뷰 데이터 가져오기 시작");
-      const data = await getReviews(1, 3);
+      const data = await getReviews({ page: 0, size: 3 });
 
-      if (!data || data.reviews.length === 0) {
+      if (!data || data.content.length === 0) {
         console.warn("가져온 리뷰 데이터가 없습니다");
         setReviewsData({
-          reviews: [],
-          totalCount: 0,
-          page: 1,
-          pageSize: 3,
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          number: 0,
+          size: 3,
+          numberOfElements: 0,
+          first: true,
+          last: true,
+          empty: true,
         });
       } else {
-        console.log(`${data.reviews.length}개의 리뷰를 가져왔습니다`);
+        console.log(`${data.content.length}개의 리뷰를 가져왔습니다`);
         setReviewsData(data);
       }
     } catch (error) {
       console.error("리뷰를 가져오는 중 오류 발생:", error);
       setError("리뷰를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.");
       setReviewsData({
-        reviews: [],
-        totalCount: 0,
-        page: 1,
-        pageSize: 3,
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        number: 0,
+        size: 3,
+        numberOfElements: 0,
+        first: true,
+        last: true,
+        empty: true,
       });
     } finally {
       setLoading(false);
@@ -84,18 +98,10 @@ export default function ReviewsSection() {
           </div>
         ) : (
           <Box className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reviewsData.reviews.length > 0 ? (
-              reviewsData.reviews.map((review) => (
-                <Box key={review.id} className="relative">
+            {reviewsData.content.length > 0 ? (
+              reviewsData.content.map((review) => (
+                <Box key={review.receiptReviewId} className="relative">
                   <ReviewCard review={review} />
-                  <Box className="absolute top-2 right-2 z-10">
-                    <ShareButtons
-                      title={review.title}
-                      description={`${review.location} - ${review.content.substring(0, 50)}...`}
-                      url={`/reviews/${review.id}`}
-                      location={review.location}
-                    />
-                  </Box>
                 </Box>
               ))
             ) : (

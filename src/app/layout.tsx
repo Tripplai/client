@@ -6,6 +6,7 @@ import "./globals.css";
 import "../styles/home.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from 'react-hot-toast';
 import { MSWProvider } from "@/components/providers/MSWProvider";
 import dynamic from "next/dynamic";
 import RQProvider from "@/components/providers/RQProvider";
@@ -161,6 +162,25 @@ export default function RootLayout({
               React.isValidElement(child) ? React.cloneElement(child, { key: `modal-${i}` }) : child
             )}
             <ToastContainer />
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+                success: {
+                  style: {
+                    background: '#10b981',
+                  },
+                },
+                error: {
+                  style: {
+                    background: '#ef4444',
+                  },
+                },
+              }}
+            />
           </RQProvider>
         </MSWProvider>
       </body>
