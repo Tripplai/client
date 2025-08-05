@@ -1,84 +1,103 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockReviews } from '@/data/mockReviews';
 
-// 특정 위치에 대한 실제 존재하는 이미지 수 매핑
-const locationImageCounts: Record<string, number> = {
-  '제주도': 3,
-  '서울': 2,
-  '부산': 2,
-  '경주': 2,
-  '전주': 2,
-  '강원도': 2
-};
+const SERVER_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// GET 요청 처리 - 리뷰 목록 가져오기
+if (!SERVER_BASE_URL) {
+  console.error('NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.');
+}
+
+// GET 요청 처리 - 리뷰 목록 가져오기 (서버 API 프록시)
 export async function GET(request: NextRequest) {
   try {
-    // URL 파라미터 가져오기
+    console.log('API 라우트 호출됨:', request.url);
+    
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const pageSize = parseInt(searchParams.get('pageSize') || '12');
-    const location = searchParams.get('location') || '';
-    const tag = searchParams.get('tag') || '';
+    const page = searchParams.get('page') || '0';
+    const size = searchParams.get('size') || '10';
 
-    // 필터링
-    let filteredReviews = [...mockReviews];
+    const serverUrl = `${SERVER_BASE_URL}/api/receiptReview/reviews?page=${page}&size=${size}`;
+    console.log(`서버 API 호출 시도: ${serverUrl}`);
 
-    if (location) {
-      filteredReviews = filteredReviews.filter(review =>
-        review.location.toLowerCase().includes(location.toLowerCase())
-      );
-    }
+    // 클라이언트에서 전달된 헤더 가져오기
+    const authorization = request.headers.get('authorization');
+    console.log('Authorization 헤더:', authorization ? '있음' : '없음');
 
-    if (tag) {
-      filteredReviews = filteredReviews.filter(review =>
-        review.tags.some((t: string) => t.toLowerCase().includes(tag.toLowerCase()))
-      );
-    }
+    // 타임아웃 설정
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    // 각 리뷰의 이미지 수 조정
-    filteredReviews = filteredReviews.map(review => {
-      let imageLimitCount = 2; // 기본값
-
-      // 위치 기반으로 적절한 이미지 수 찾기
-      for (const [loc, count] of Object.entries(locationImageCounts)) {
-        if (review.location.includes(loc)) {
-          imageLimitCount = count;
-          break;
-        }
-      }
-
-      // 이미지 배열 길이 조정
-      const adjustedImages = review.images.slice(0, imageLimitCount);
-
-      return {
-        ...review,
-        images: adjustedImages
-      };
-    });
-
-    // 페이지네이션
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedReviews = filteredReviews.slice(startIndex, endIndex);
-
-    // 응답 데이터 구성
-    const response = {
-      reviews: paginatedReviews,
-      totalCount: filteredReviews.length,
-      page,
-      pageSize
+    // 헤더 구성
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
     };
 
-    // 실제 API 호출처럼 약간의 지연 추가
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Authorization 헤더가 있으면 추가
+    if (authorization) {
+      headers['Authorization'] = authorization;
+    }
 
-    return NextResponse.json(response);
+    const response = await fetch(serverUrl, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    console.log(`서버 응답 상태: ${response.status}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`서버 API 오류: ${response.status} ${response.statusText}`, errorText);
+      
+      // 401 오류인 경우 빈 데이터 반환 (임시 처리)
+      if (response.status === 401) {
+        console.log('401 오류 - 빈 데이터 반환');
+        return NextResponse.json({
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          number: parseInt(page),
+          size: parseInt(size),
+          numberOfElements: 0,
+          first: true,
+          last: true,
+          empty: true,
+        });
+      }
+      
+      return NextResponse.json(
+        { error: '서버에서 리뷰 목록을 가져오는 중 오류가 발생했습니다.' },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    console.log('서버 응답 데이터:', data);
+    
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('리뷰 목록 API 오류:', error);
-    return NextResponse.json(
-      { error: '리뷰 목록을 가져오는 중 오류가 발생했습니다.' },
-      { status: 500 }
-    );
+    console.error('리뷰 목록 API 프록시 오류:', error);
+    
+    // 상세한 오류 정보 제공
+    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+    console.error('오류 상세:', errorMessage);
+    
+    // 오류 발생 시에도 빈 데이터 반환 (임시 처리)
+    const searchParams = request.nextUrl.searchParams;
+    const page = searchParams.get('page') || '0';
+    const size = searchParams.get('size') || '10';
+    
+    return NextResponse.json({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      number: parseInt(page),
+      size: parseInt(size),
+      numberOfElements: 0,
+      first: true,
+      last: true,
+      empty: true,
+    });
   }
 } 
